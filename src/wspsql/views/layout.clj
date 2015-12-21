@@ -28,6 +28,18 @@
           [:div {:id "four-oh-four"}
            "Essa página não existe =["]))
 
+(defn done []
+  (h/html5
+    [:head
+      [:meta {:charset "utf-8"}]
+    ]
+    [:body
+      [:div "done"]
+    ]
+  )
+)
+
+
 (defn options
   ([] (options #{:options} nil))
   ([allowed] (options allowed nil))

@@ -16,5 +16,5 @@
   		(sql/delete! spec :updatesys ["sys=?" "centrality"])	
   	)
   	(sql/insert! spec :updatesys (zipmap [:sys]["centrality"]))  
-  
 )
+

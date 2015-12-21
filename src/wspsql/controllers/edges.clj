@@ -1,7 +1,6 @@
 (ns wspsql.controllers.edges
   (:require [compojure.core :refer [defroutes GET POST DELETE PUT OPTIONS HEAD ANY]]
             [compojure.route :as route]
-            [cheshire.core :refer [generate-string]]
             [clojure.string :as str]
             [clojure.core :refer [read-string]]
             [ring.util.response :as ring]
@@ -10,6 +9,7 @@
             [wspsql.views.layout :as layout]
             [wspsql.views.edges :as layout_edges]
             [wspsql.controllers.assist :as assist]
+            [wspsql.controllers.firstpart :as firstpart]
   )
 )
 
@@ -70,7 +70,7 @@
   }
 )
 
-(defn index []   (layout_edges/index (edges/all)))
+(defn index []  (layout_edges/index (edges/all)))
 
 (defn create_post
   [A B]
@@ -78,14 +78,11 @@
     (when (and (assist/isnumber? A) (assist/isnumber? B))
       (when-not (= A B)
         (if (edges/exist? A B)
-          (println "no ja cadastrado") ;TEM QUE MUDAR
+          (println (str "Ligacao " A "-" B " ja cadastrado"))
           (edges/create (assist/cast-int A) (assist/cast-int B))
         )
       )      
     )    
-    ;(println (str A "-" B))
-    ;(println (isnumber? A))
-    ;(println (isnumber? B))
   )
   (ring/redirect "/edges/")
 )
@@ -95,14 +92,14 @@
   (when-not (or (str/blank? A) (str/blank? B))
     (when (and (assist/isnumber? A) (assist/isnumber? B))
       (when-not (= A B)
-        (if (edges/exist? A B)
+        (when (edges/exist? A B)
           (edges/delete (assist/cast-int A) (assist/cast-int B))
-          (println "no não cadastrado2") ;TEM QUE MUDAR
+          (firstpart/farness (edges/all-edges))
         )
       )      
     )    
   )
-  (ring/redirect "/")
+  (ring/redirect "/done")
   )
 )
 
@@ -117,11 +114,8 @@
         (edges/create (assist/cast-int A) (assist/cast-int B))
       )      
     )    
-    ;(println (str A "-" B))
-    ;(println (isnumber? A))
-    ;(println (isnumber? B))
   )
-  (ring/redirect "/edges/")
+  (ring/redirect "/done")
 )
 
 
