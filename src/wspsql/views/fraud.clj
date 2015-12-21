@@ -16,7 +16,7 @@
 (defn display-nos-fraud [nos-fraud]
   [:div {:class "nosfraud sixteen columns alpha omega"}
     (map
-      (fn [nos] [:h3 {:class "nosfraud"} (str (:no nos))])
+      (fn [nos] [:h3 {:class "nosfraud" :style "position: relative; left: 25px; line-height: 40%;"} (str (:no nos))])
       nos-fraud
     )
   ]
@@ -25,7 +25,7 @@
 (defn index [nos-fraud]
   (layout/standard "edges"
                  (nos-fraud-form)
-                 [:div {:class "clear"}]
+                 [:div [:h2 {:class "tabela" :style "line-height: 80%;"} "Fraudes"]]
                  (display-nos-fraud nos-fraud)
   )
 )

@@ -1,37 +1,74 @@
 (ns wspsql.controllers.fraud
   (:require [compojure.core :refer [defroutes GET POST DELETE PUT OPTIONS HEAD ANY]]
             [compojure.route :as route]
-            [cheshire.core :refer [generate-string]]
             [clojure.string :as str]
-            [clojure.core :refer [read-string]]
             [ring.util.response :as ring]
-            [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [wspsql.models.edges :as edges]
             [wspsql.views.layout :as layout]
             [wspsql.views.fraud :as layout_fraud]
-            [wspsql.controllers.firstpart :as firstpart]
+            [wspsql.controllers.core :as core]
             [wspsql.controllers.assist :as assist]
             [wspsql.models.centrality :as centrality]
-            [wspsql.models.updatesys :as updatesys]
             [wspsql.models.fraud :as fraud]
-            [wspsql.models.migration :as migration]
   )
 )
 
-
+;JSON de resposta de OPTIONS
+(def options-descript 
+  { 
+    :GET {
+      :description "Mostra todas os nós que possuem fraude.",
+      :comments "Não descrimina se a fraude foi ou não aplicada" 
+    },
+    :POST {
+      :description "Aplica fraude sobre um Nó",
+      :parameters {
+        :no {
+          :type "integer",
+          :description "Nó Fraudulento"
+          :required true
+        }
+      },
+      :comments "O Score do Nó fraudulento é reduzido a zero. Todos os outros nós do grafo tem seu score multiplicado pela função (1 - (1/2)^k), onde k é a distancia entre o nó fraudulento e o nó não fraudulento."
+    },
+    :PUT {
+      :description "Aplica fraude sobre um nó",
+      :parameters {
+        :no {
+          :type "integer",
+          :description "No Fraudulento"
+          :required true
+        }
+      },
+      :comments "O Score do Nó fraudulento é reduzido a zero. Todos os outros nós do grafo tem seu score multiplicado pela função (1 - (1/2)^k), onde k é a distancia entre o nó fraudulento e o nó não fraudulento."
+    },
+    :DELETE {
+      :description "Apaga a fraude de um nó.",
+      :parameters {
+        :no {
+          :type "integer",
+          :description "No Fraudulento"
+          :required true
+        }
+      }
+      :comments "Deleta, se existir, a fraude de um nó."
+    }
+  }
+)
 
 (defn index []   
-  (firstpart/fraud (edges/all-edges))
+  (core/fraud (edges/all-edges))
   (layout_fraud/index (fraud/all)) 
 )
 
-(defn fraud-node-post [no]
+(defn fraud-node-post "Aplica Fraude no No por POST."
+  [no]
   (when-not (str/blank? no)
     (when (assist/isnumber? no)
       (when (centrality/node-exist? no)
         (when-not (fraud/fraudulent? no)
           (fraud/set-fraudulent (assist/cast-int no))
-          (firstpart/fraud (edges/all-edges))
+          (core/fraud (edges/all-edges))
         )  
       )    
     )    
@@ -39,20 +76,23 @@
   (ring/redirect "/fraud/")
 )
 
-(defn remove-fraud [no]
+(defn remove-fraud "Remove Fraude do No por DELETE."
+  [no]
   (when-not (str/blank? no)
     (when (assist/isnumber? no)
       (when (centrality/node-exist? no)
         (when (fraud/fraudulent? no)
           (fraud/delete-fraudulent (assist/cast-int no)) 
-          (firstpart/farness (edges/all-edges))
+          (core/farness (edges/all-edges))
         )
       ) 
     )    
   )
+  (ring/redirect "/done")
 )
 
-(defn fraud-node-put [no]
+(defn fraud-node-put "Aplica Fraude no No por PUT."
+  [no] 
   (when-not (str/blank? no)
     (when (assist/isnumber? no)
       (when (centrality/node-exist? no)
@@ -60,10 +100,11 @@
           (fraud/delete-fraudulent no) 
         )
         (fraud/set-fraudulent (assist/cast-int no))
-        (firstpart/fraud (edges/all-edges))
+        (core/fraud (edges/all-edges))
       )
     )    
   )
+  (ring/redirect "/done")
 )
 
 (defroutes routes
@@ -75,8 +116,8 @@
     (remove-fraud no))
   (PUT "/:no" [no] 
     (fraud-node-put no))
-;  (OPTIONS "/" []
-;        (layout/options [:options :get :head] options-descript))
+  (OPTIONS "/" []
+        (layout/options [:options :get :head] options-descript))
   (HEAD "/" [] 
     (layout/standard nil nil))
   (ANY "/" []

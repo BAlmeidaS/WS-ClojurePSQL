@@ -1,13 +1,16 @@
 (ns wspsql.models.migration
   (:require [clojure.java.jdbc :as sql :refer :all]))
 
+
 (def spec "postgresql://postgres:230789@172.17.0.2:5432/wsclojure")
 
-(defn migrated? []
-  (-> (sql/query spec
-                 [(str "select count(*) from information_schema.tables "
-                       "where table_name in ('edges', 'centrality', 'updatesys', 'fraud')")])
-      first :count (> 3)))
+(defn migrated? 
+    []
+    (-> (sql/query spec   [(str   "select count(*) from information_schema.tables "
+                                            "where table_name in ('edges', 'centrality', 'updatesys', 'fraud')")])
+         first 
+         :count 
+         (> 3)))
 
 
 (defn info-of-tables

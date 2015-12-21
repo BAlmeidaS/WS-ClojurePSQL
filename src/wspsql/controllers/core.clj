@@ -1,4 +1,4 @@
-(ns wspsql.controllers.firstpart
+(ns wspsql.controllers.core
   (:require [clojure.java.io :as io] 
   			[clojure.set :as set]
   			[wspsql.models.centrality :as centrality]
@@ -192,7 +192,6 @@
   		(when (seq data)
   			(print (str "Aplicando fraude do No:" ((first data) :no)"..."))
     		(fraud-node ((first data) :no) base)
-    		(println "Feito!")
    	 		(recur (rest data) (inc index))
    	 	)
    	)
@@ -227,7 +226,6 @@
 	  	(fraud/unapply-all)
 	  	(fraud base)
 	  	(println "feito!")
-	  	(into #{} return)
 	)
 )
 

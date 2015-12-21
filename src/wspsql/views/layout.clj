@@ -21,7 +21,11 @@
 (defn home []
   (standard "Home"
           [:div {:id "Home"}
-           "Página inicial <br><br> Acesse /edges para mais opções"]))
+           "Página inicial <br><br>
+            Acesse <b>/edges</b> para controle das edges do grafo <br>
+            Acesse <b>/graph</b> para obtencao das centralidades dos nos do grafo <br>
+            Acesse <b>/fraud</b> para controle das fraudes dos nos <br>
+            "]))
 
 (defn four-oh-four []
   (standard "Page Not Found"
@@ -38,7 +42,6 @@
     ]
   )
 )
-
 
 (defn options
   ([] (options #{:options} nil))

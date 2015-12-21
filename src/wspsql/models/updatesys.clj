@@ -1,20 +1,21 @@
 (ns wspsql.models.updatesys
   (:require [clojure.java.jdbc :as sql]
-  			[clj-time.format :as time :refer :all]))
+  			    [clj-time.format :as time :refer :all]
+            [wspsql.models.migration :as migration]))
 
-(def spec "postgresql://postgres:230789@172.17.0.2:5432/wsclojure")
-
-(defn get-update []
-	(-> (into [] (sql/query spec ["select update from updatesys where sys = 'centrality'"]))
+(defn get-update "Retorna o horario da ultima atualizacao da tabela centrality"
+  []
+	(-> (into [] (sql/query migration/spec ["select update from updatesys where sys = 'centrality'"]))
 		first
 		:update
 	)
 )
 
-(defn set-update []
-  	( if (-> (sql/query spec ["select count(*) from updatesys where sys = 'centrality'"]) first :count pos?)
-  		(sql/delete! spec :updatesys ["sys=?" "centrality"])	
+(defn set-update "seta o horario de agora como a ultima atualizacao da tabela centrality"
+    []
+  	( if (-> (sql/query migration/spec ["select count(*) from updatesys where sys = 'centrality'"]) first :count pos?)
+  		(sql/delete! migration/spec :updatesys ["sys=?" "centrality"])	
   	)
-  	(sql/insert! spec :updatesys (zipmap [:sys]["centrality"]))  
+  	(sql/insert! migration/spec :updatesys (zipmap [:sys]["centrality"]))  
 )
 

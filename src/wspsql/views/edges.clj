@@ -18,13 +18,13 @@
 (defn display-edges [edges]
   [:div {:class "edges sixteen columns alpha omega"}
    (map
-    (fn [edges] [:h3 {:class "edges"} (str (:noa edges) "-" (:nob edges) )])
+    (fn [edges] [:h3 {:class "edges" :style "position: relative; left: 25px; line-height: 40%;"}(str (:noa edges) "-" (:nob edges) )])
     edges)])
 
 (defn index [edges]
   (layout/standard "edges"
                  (edges-form)
-                 [:div {:class "clear"}]
+                 [:div [:h2 {:class "tabela" :style "line-height: 80%;"} "Ligação"]]
                  (display-edges edges)
   )
 )

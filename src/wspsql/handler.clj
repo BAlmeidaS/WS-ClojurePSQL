@@ -21,13 +21,13 @@
     )
     (GET "/" [] 
       (layout/home))
-  	(OPTIONS "/" []
+    (OPTIONS "/" []
       (layout/options [:options :get] {:version "3.0.0"}))
     (ANY "/" []
         (layout/method-not-allowed [:options :get]))
     (ANY "/done" [] 
       (layout/done ))
-  	(route/not-found (layout/four-oh-four))
+    (route/not-found (layout/four-oh-four))
 )
 
 (def app
