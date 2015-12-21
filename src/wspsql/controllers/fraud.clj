@@ -57,7 +57,7 @@
 )
 
 (defn index []   
-  (core/fraud (edges/all-edges))
+  (core/farness (edges/all-edges))
   (layout_fraud/index (fraud/all)) 
 )
 

@@ -8,6 +8,8 @@
             [wspsql.views.edges :as layout_edges]
             [wspsql.controllers.assist :as assist]
             [wspsql.controllers.core :as core]
+            [wspsql.models.centrality :as centrality]
+            [wspsql.models.fraud :as fraud]            
   )
 )
 
@@ -94,6 +96,13 @@
         (when (edges/exist? A B)
           (edges/delete (assist/cast-int A) (assist/cast-int B))
           (core/farness (edges/all-edges))
+          ;Se o no deixar de existir e ele possuir uma fraude, essa fraude deve ser deletada
+          (if (not (centrality/node-exist? (assist/cast-int A))) 
+            (if (fraud/fraudulent? (assist/cast-int A)) (fraud/delete-fraudulent (assist/cast-int A)))
+          )
+          (if (not (centrality/node-exist? (assist/cast-int B))) 
+            (if (fraud/fraudulent? (assist/cast-int B)) (fraud/delete-fraudulent (assist/cast-int B)))
+          )
         )
       )      
     )    

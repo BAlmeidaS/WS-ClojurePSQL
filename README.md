@@ -80,7 +80,7 @@ A tabela guarda quais nós são considerados fraudulentos. A informação de app
 
 1. O front-end poderia ser melhorado. Não sou particularmente bom em front-end, por isso entreguei uma versão um pouco "crua". O Visual poderia ser melhor das views, entretanto, a informação está lá'e é facilmente acessada'
 
-2. Os posts realizados pelo form não mostram resultados. Eu gostaria de ter implentando um simples alert quando os POTSs fossem realizados, informando se o dado foi inserido (ou se nao foi por já estar lá). Entretanto, tive grandes dificuldades de incluir javascript nas views o que impossibilitaram esse desenvolvimento.
+2. Os posts realizados pelo form não mostram resultados. Eu gostaria de ter implentando um simples alert quando os POTSs fossem realizados, informando se o dado foi inserido por algum problema, ou se por já estar lá. Entretanto, tive grandes dificuldades de incluir javascript nas views, que impossibilitaram esse desenvolvimento.
 
 
 
