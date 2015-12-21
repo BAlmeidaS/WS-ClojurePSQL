@@ -12,6 +12,7 @@ O principal motivo pela escolha do postgres foi para facilitar o deploy no herok
 
 Pensei e cheguei a implementar uma solução utilizando Cassandra e Mongo. Entretanto não havia uma opção clara para utilizar um nosql, a não ser pela escalabilidade. Outro motivo pela escolha do postgres foi por acreditar que ele possui um bom desempenho entre os SGBDs relacionais.
 
+Utilizei Compojure e Ring na solução. Me escolha por compojure/ring foi por possuir muito material na internet sobre, por mais que sejam apenas libraries, achei o compojure bastante poderoso. Olhei alguns frameworks como Liberator e Luminus, mas optei pelo compojure. Além disso estou utilizando hiccup para template.
 
 
 ##Executar offline
@@ -75,8 +76,11 @@ A coluna update guarda a data do ultimo cálculo de centralidade do sistema. Uti
 
 A tabela guarda quais nós são considerados fraudulentos. A informação de applied é para saber se a fraude referente aquele nó já foi aplicada (tanto no nó, como nos outros nós do grafo que sofrem por consequência), ela é util para que não haja aplicação errada de fraude e que multiplas fraudes possam ser aplicadas no grafo.
 
+###Melhoras a se fazer
 
+1. O front-end poderia ser melhorado. Não sou particularmente bom em front-end, por isso entreguei uma versão um pouco "crua". O Visual poderia ser melhor das views, entretanto, a informação está lá'e é facilmente acessada'
 
+2. Os posts realizados pelo form não mostram resultados. Eu gostaria de ter implentando um simples alert quando os POTSs fossem realizados, informando se o dado foi inserido (ou se nao foi por já estar lá). Entretanto, tive grandes dificuldades de incluir javascript nas views o que impossibilitaram esse desenvolvimento.
 
 
 
