@@ -9,6 +9,7 @@
             [wspsql.models.edges :as edges]
             [wspsql.views.layout :as layout]
             [wspsql.views.edges :as layout_edges]
+            [wspsql.controllers.assist :as assist]
   )
 )
 
@@ -24,10 +25,12 @@
         :no_a {
           :type "integer",
           :description "Primeiro no da ligacao."
+          :required "true"
         },
         :no_b {
           :type "integer",
           :description "Segundo no da ligacao."
+          :required "true"
         }
       },
       :comments "Gera a ligacao apenas se ela ainda nao existir. Se ela ja existir devolve uma aviso"
@@ -38,10 +41,12 @@
         :no_a {
           :type "integer",
           :description "Primeiro no da ligacao."
+          :required "true"
         },
         :no_b {
           :type "integer",
           :description "Segundo no da ligacao."
+          :required "true"
         }
       },
       :comments "Se a ligacao ja existir, apaga ela, e cria uma nova. Isso atualiza sua data de criacao"
@@ -52,10 +57,12 @@
         :no_a {
           :type "integer",
           :description "Primeiro no da ligacao."
+          :required "true"
         },
         :no_b {
           :type "integer",
           :description "Segundo no da ligacao."
+          :required "true"
         }
       },
       :comments "Deleta a ligacao apenas se ela existir."
@@ -63,36 +70,16 @@
   }
 )
 
-
-(defn isnumber? [s]
-  (if-let [s (seq s)]
-    (let  [ ;negativo:
-            ;s (if (= (first s) \-) (next s) s)
-            s (drop-while #(Character/isDigit %) s)
-            ;reconhecimento de ponto
-            ;s (if (= (first s) \.) (next s) s)
-            ;s (drop-while #(Character/isDigit %) s)
-          ]
-      (empty? s)
-    )
-  )
-)
-
 (defn index []   (layout_edges/index (edges/all)))
-
-(defn cast-int [s] (Integer. (re-find  #"\d+" s )))
-
-
-
 
 (defn create_post
   [A B]
   (when-not (or (str/blank? A) (str/blank? B))
-    (when (and (isnumber? A) (isnumber? B))
+    (when (and (assist/isnumber? A) (assist/isnumber? B))
       (when-not (= A B)
         (if (edges/exist? A B)
           (println "no ja cadastrado") ;TEM QUE MUDAR
-          (edges/create (cast-int A) (cast-int B))
+          (edges/create (assist/cast-int A) (assist/cast-int B))
         )
       )      
     )    
@@ -106,10 +93,10 @@
 (defn delete
   ([A B]
   (when-not (or (str/blank? A) (str/blank? B))
-    (when (and (isnumber? A) (isnumber? B))
+    (when (and (assist/isnumber? A) (assist/isnumber? B))
       (when-not (= A B)
         (if (edges/exist? A B)
-          (edges/delete (cast-int A) (cast-int B)) ;TEM QUE MUDAR
+          (edges/delete (assist/cast-int A) (assist/cast-int B))
           (println "no não cadastrado2") ;TEM QUE MUDAR
         )
       )      
@@ -122,12 +109,12 @@
 (defn create_put
   [A B]
   (when-not (or (str/blank? A) (str/blank? B))
-    (when (and (isnumber? A) (isnumber? B))
+    (when (and (assist/isnumber? A) (assist/isnumber? B))
       (when-not (= A B)
         (if (edges/exist? A B)
-          (edges/delete (cast-int A) (cast-int B)) ;TEM QUE MUDAR
+          (edges/delete (assist/cast-int A) (assist/cast-int B)) ;TEM QUE MUDAR
         )
-        (edges/create (cast-int A) (cast-int B))
+        (edges/create (assist/cast-int A) (assist/cast-int B))
       )      
     )    
     ;(println (str A "-" B))
@@ -136,6 +123,7 @@
   )
   (ring/redirect "/edges/")
 )
+
 
 (defroutes routes
   (GET "/" [] 

@@ -1,17 +1,32 @@
 (ns wspsql.models.edges
-  (:require [clojure.java.jdbc :as sql]))
+  (:require [clojure.java.jdbc :as sql]
+  			[wspsql.models.updatesys :as updatesys]))
 
-(def spec (or (System/getenv "DATABASE_URL")
-              "postgresql://postgres:230789@172.17.0.2:5432/wsclojure"))
+
+(def spec "postgresql://postgres:230789@172.17.0.2:5432/wsclojure")
 
 (defn all []
   (into [] (sql/query spec ["select * from edges order by created desc"])))
+
+(defn all-edges []
+  (into [] (sql/query spec ["select noa, nob from edges"])))
 
 (defn exist? [A B]
 	(-> (sql/query spec
                  [(str "select * from edges where noa = " A " and nob = " B)]
         )
       	first :created nil? not)
+)
+
+(defn time-created [A B]
+	(into [] (sql/query spec [(str "select * from edges where noa = " A " and nob = " B "order by created desc")]))
+)
+
+(defn last-insert []
+	(-> (into [] (sql/query spec ["select created from edges order by created desc limit 1"]))
+		first
+		:created
+	)
 )
 
 (defn create [A B]
