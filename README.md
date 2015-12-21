@@ -50,32 +50,28 @@ Métodos implementados nos endpoints:
 ###SQL e detalhes
 As tabelas criadas foram:
 
-| `NOME_TABELA`   | `NOME_COLUNA` | 
-| ------------- |:-------------:|
-| `Data Type` | `DATA TYPE` | 
-
 
 | *EDGES*         | NO A           | NO B  | Created |
 | ------------- |:-------------:| :-----:| :-----: |
-| Data Type     | `integer` | `integer` | `timestamp` |
+| `Data Type`     | `integer` | `integer` | `timestamp` |
 
 A coluna created guarda a data de inclusão daquele nó. Essa informação é importante pois o sistema verifica quando foi a utima inclusão de uma edge, se ela for anterior a data do o ultimo cálculo de centralidade, o sistema não recalcula a centralidade de novo, quando for requisitado. Essa otimização não tem relação com fraudes, quando uma fraude é inserida ou deletada o calculo de centralidade é feito desconsiderando essa otimização.
 
 | *CENTRALITY*         | NO          | Closeness  | Farness |
 | ------------- |:-------------:| :-----:| :-----: |
-| Data Type     | `integer` | `numeric(8,8)` | `integer` |
+| `Data Type`     | `integer` | `numeric(8,8)` | `integer` |
 
 Foi uma opção guardar o farness, poderia sempre ser calculado.
 
 | *UPDATESYS*         | sys         | update|
 | ------------- |:-------------:| :-----:| 
-| Data Type     | `varchar(16)` | `timestamp` |
+| `Data Type`     | `varchar(16)` | `timestamp` |
 
 A coluna update guarda a data do ultimo cálculo de centralidade do sistema. Utilização explicada na tabela de EDGES.
 
 | *FRAUD*         | no         | applied|
 | ------------- |:-------------:| :-----:| 
-| Data Type     | `integer` | `boolean` |
+| `Data Type`     | `integer` | `boolean` |
 
 A tabela guarda quais nós são considerados fraudulentos. A informação de applied é para saber se a fraude referente aquele nó já foi aplicada (tanto no nó, como nos outros nós do grafo que sofrem por consequência), ela é util para que não haja aplicação errada de fraude e que multiplas fraudes possam ser aplicadas no grafo.
 
