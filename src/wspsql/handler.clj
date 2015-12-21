@@ -23,6 +23,8 @@
       (layout/home))
     (OPTIONS "/" []
       (layout/options [:options :get] {:version "3.0.0"}))
+    (HEAD "/" [] 
+      (layout/standard nil nil))
     (ANY "/" []
         (layout/method-not-allowed [:options :get]))
     (ANY "/done" [] 
