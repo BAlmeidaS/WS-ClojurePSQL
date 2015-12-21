@@ -1,4 +1,4 @@
-(defproject wspsql "2.0.0"
+(defproject wspsql "3.0.0"
   :description "Webservice clojure psql"
   :url "https://github.com/BAlmeidaS/WS-ClojurePSQL"
   :min-lein-version "2.0.0"

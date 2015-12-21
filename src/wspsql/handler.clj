@@ -22,7 +22,7 @@
     (GET "/" [] 
       (layout/home))
   	(OPTIONS "/" []
-      (layout/options [:options :get] {:version "2.0.0"}))
+      (layout/options [:options :get] {:version "3.0.0"}))
     (ANY "/" []
         (layout/method-not-allowed [:options :get]))
     (ANY "/done" [] 
