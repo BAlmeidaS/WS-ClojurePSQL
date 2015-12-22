@@ -22,9 +22,9 @@
   (standard "Home"
           [:div {:id "Home"}
            "Página inicial <br><br>
-            Acesse <b>/edges</b> para controle das edges do grafo <br>
-            Acesse <b>/graph</b> para obtencao das centralidades dos nos do grafo <br>
-            Acesse <b>/fraud</b> para controle das fraudes dos nos <br>
+            Acesse <a href=\"/edges\">/edges</a> para controle das edges do grafo <br>
+            Acesse <a href=\"/graph\">/graph</a> para obtencao das centralidades dos nos do grafo <br>
+            Acesse <a href=\"/fraud\">/fraud</a> para controle das fraudes dos nos <br>
             "]))
 
 (defn four-oh-four []
