@@ -1,15 +1,52 @@
 (ns wspsql.controllers.core
   (:require [clojure.java.io :as io] 
   			[clojure.set :as set]
+  			[ring.util.response :as ring]
   			[wspsql.models.centrality :as centrality]
   			[wspsql.models.updatesys :as updatesys]
   			[wspsql.models.fraud :as fraud]
   			[wspsql.models.migration :as migration]
+  			[wspsql.models.edges :as edges]
   )
 )
 
 
 (defn 	not-equal [] (complement =))
+
+;funcao auxilair para initialEdges
+(defn validaEinsere "valida se a edge ja esta cadastrado e o insere no banco."
+	[edge]
+	(if (not (edges/exist? (edge :noa) (edge :nob)))
+		(edges/create (edge :noa) (edge :nob))
+	)
+)
+
+(defn initial-edges
+	"Função que carrega no sistema os nos gravados em um txt"
+	[]
+	(print "Deletando dados de EDGES, CENTRALIDADE e FRAUD...")
+	(centrality/remove-all)
+	(edges/remove-all)
+	(fraud/remove-all)
+	(println "feito!")
+	(println "inicio de leitura do txt...")
+	(with-open [rdr (io/reader (io/file (io/resource "edges.txt")))]
+		(doseq [line (line-seq rdr)]
+			(validaEinsere
+				(zipmap [:noa :nob]
+					(into []	
+						(map #(Integer. %) 
+							(clojure.string/split line #" ")
+						)
+					)
+				)
+			)
+		)
+	)
+	(println "Feito")
+	(ring/redirect "/edges")
+)
+;;;;;;
 
 (defn 	contem
 		"Funcao que retorna se um numero x esta contido dentro de um map"
@@ -204,7 +241,7 @@
 		(def x (apply sorted-set (map #(% :noa) base)))
 		(def x (into x (apply sorted-set (map #(% :nob) base))))
 		(def return #{})
-		(centrality/delete-content)
+		(centrality/remove-all)
 		(print "Calculando centralidade dos nos...")
 		(loop [data x, index 0]
 	  		(when (seq data)

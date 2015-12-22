@@ -54,3 +54,8 @@
 	(println "feito!")
 )
 
+(defn remove-all "funcao que remove todos os edges do banco"
+	[]
+	(sql/db-do-commands migration/spec (str "delete from edges"))
+)
+

@@ -80,10 +80,12 @@ A tabela guarda quais nós são considerados fraudulentos. A informação de app
 
 1. O front-end poderia ser melhorado. Não sou particularmente bom em front-end, por isso entreguei uma versão um pouco "crua". O Visual poderia ser melhor das views, entretanto, a informação está lá'e é facilmente acessada'
 
-2. Os posts realizados pelo form não mostram resultados. Eu gostaria de ter implentando um simples alert quando os POTSs fossem realizados, informando se o dado foi inserido por algum problema, ou se por já estar lá. Entretanto, tive grandes dificuldades de incluir javascript nas views, que impossibilitaram esse desenvolvimento.
+2. Os posts realizados pelo form não mostram resultados. Eu gostaria de ter implentando um simples alert quando os POTSs fossem realizados, informando se o dado não foi inserido por algum problema, ou se por já estar lá. Entretanto, tive grandes dificuldades de incluir javascript nas views, que impossibilitaram esse desenvolvimento.
 
 
+#####Observações
 
+A url /txt foi inserida, o objetivo dela é zerar o banco e cadastrar as mil edges do arquivo edges.txt original dentro do site. Apaga também os dados de centralidade e fraudes inseridas anteriormente, o objetivo da url é apenas colocar uma entrada massiva de dados de uma vez. Basta realizar um GET em /txt. A operação é um pouco demorada.
 
 
 

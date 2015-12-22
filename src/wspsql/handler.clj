@@ -8,6 +8,7 @@
             [wspsql.controllers.centrality :as centrality]
             [wspsql.controllers.fraud :as fraud]
             [wspsql.views.layout :as layout]
+            [wspsql.controllers.core :as core]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]))
 
 (defroutes app-routes
@@ -26,6 +27,8 @@
       (layout/options [:options :get] {:version "3.0.0"}))
     (HEAD "/" [] 
       (layout/standard nil nil))
+    (GET "/txt" [] ;endpoint utilizado apenas para carregar os valores no banco - apaga o banco antes de carregar os valores do txt
+      (core/initial-edges)) 
     (ANY "/" []
         (layout/method-not-allowed [:options :get]))
     (route/not-found (layout/four-oh-four))

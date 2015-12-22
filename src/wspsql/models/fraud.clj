@@ -59,3 +59,9 @@
 	)
 )
 
+(defn remove-all "funcao que remove todos as fraudes do banco"
+	[]
+	(sql/db-do-commands migration/spec (str "delete from fraud"))
+)
+
+

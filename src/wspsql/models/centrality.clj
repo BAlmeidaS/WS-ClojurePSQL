@@ -37,11 +37,6 @@
 	)
 )
 
-(defn delete-content "Apaga todo o conteudo de centralidade do banco."
-	[]
-	(sql/db-do-commands migration/spec (str "delete from centrality"))
-)
-
 (defn node-exist? "Funcao que retorna true se o nó existe"
 	[no]
 	( if (-> (sql/query migration/spec [(str "select count(*) from centrality where no = " no)]) first :count pos?)
@@ -60,3 +55,9 @@
 		)
 	)
 )
+
+(defn remove-all "Apaga todo o conteudo de centralidade do banco."
+	[]
+	(sql/db-do-commands migration/spec (str "delete from centrality"))
+)
+
