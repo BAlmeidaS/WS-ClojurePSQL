@@ -2,7 +2,7 @@
   (:require [clojure.java.jdbc :as sql :refer :all]))
 
 
-(def spec "postgresql://postgres:230789@172.17.0.2:5432/wsclojure")
+(def spec "postgresql://usuario:senha@172.17.0.2:5432/wsclojure")
 
 (defn migrated? 
     []

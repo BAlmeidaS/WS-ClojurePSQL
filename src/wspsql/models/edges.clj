@@ -54,9 +54,3 @@
 	(println "feito!")
 )
 
-;RETIRAR
-
-;(defn time-created ""
-;	[A B]
-;	(into [] (sql/query migration/spec [(str "select * from edges where noa = " A " and nob = " B "order by created desc")]))
-;)
