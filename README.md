@@ -36,17 +36,17 @@ Para a terceira parte, quando um nó é caracterizado como fraudulento, tem seu 
 ###Endpoints
 
 Existem 4 endpoints:
-**__/__** - Home do Web Service
-**__/edges__** - Exibe e controle as edges do grafo
-**__/graph__** - Exibe os scores dos nos do grafo
-**__/fraud__** - Exibe e controle as fraudes dos nos do grafo
++ **__/__** - Home do Web Service
++ **__/edges__** - Exibe e controle as edges do grafo
++ **__/graph__** - Exibe os scores dos nos do grafo
++ **__/fraud__** - Exibe e controle as fraudes dos nos do grafo
 
 ###RESTful
 Métodos implementados nos endpoints:
-**__/__** - GET, HEAD, OPTIONS
-**__/edges__** - GET, HEAD, POST, PUT, DELETE, OPTIONS
-**__/graph__** - GET, HEAD, OPTIONS
-**__/fraud__** - GET, HEAD, POST, PUT, DELETE, OPTIONS
++ **__/__** - GET, HEAD, OPTIONS
++ **__/edges__** - GET, HEAD, POST, PUT, DELETE, OPTIONS
++ **__/graph__** - GET, HEAD, OPTIONS
++ **__/fraud__** - GET, HEAD, POST, PUT, DELETE, OPTIONS
 
 ###SQL e detalhes
 As tabelas criadas foram:
