@@ -60,20 +60,25 @@
   [no]
   (core/farness (edges/all-edges))
   (def x (centrality/node-closeness no))
-  (zipmap
-    [:no :closeness :farness :fraudulent]
-    (vector no x (float (/ 1 x)) (fraud/fraudulent? no) )
+  (if (> x 0)
+    (zipmap
+      [:no :closeness :farness :fraudulent]
+      (vector no x (float (/ 1 x)) (fraud/fraudulent? no) )
+    )
+    (zipmap
+      [:no :closeness :farness :fraudulent]
+      (vector no 0 0.0 (fraud/fraudulent? no) )
+    )
   )
+
 )
 
 (defn nodeGet "Retorna as informacoes do no em um request GET com parametro NO"
   [no] 
-  (when-not (str/blank? no)
-    (when (assist/isnumber? no)
-      (if (centrality/node-exist? no)
-        (ring/response (nodeinfo (assist/cast-int no))) 
-        (ring/response "null") 
-      )
+  (when (and (not(str/blank? no)) (assist/isnumber? no))
+    (if (centrality/node-exist? no)
+      (ring/response (nodeinfo (assist/cast-int no)))
+      (ring/not-found "null") 
     )    
   )  
 )

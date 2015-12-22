@@ -63,48 +63,58 @@
 
 (defn fraud-node-post "Aplica Fraude no No por POST."
   [no]
-  (when-not (str/blank? no)
-    (when (assist/isnumber? no)
-      (when (centrality/node-exist? no)
-        (when-not (fraud/fraudulent? no)
-          (fraud/set-fraudulent (assist/cast-int no))
-          (core/fraud (edges/all-edges))
-        )  
-      )    
-    )    
+  (when     (and  (not (str/blank? no))
+                  (assist/isnumber? no)
+                  (centrality/node-exist? no)
+                  (not (fraud/fraudulent? no)))
+
+    (fraud/set-fraudulent (assist/cast-int no))
+    (core/fraud (edges/all-edges))
   )
   (ring/redirect "/fraud/")
 )
 
 (defn remove-fraud "Remove Fraude do No por DELETE."
   [no]
-  (when-not (str/blank? no)
-    (when (assist/isnumber? no)
-      (when (centrality/node-exist? no)
-        (when (fraud/fraudulent? no)
-          (fraud/delete-fraudulent (assist/cast-int no)) 
-          (core/farness (edges/all-edges))
-        )
-      ) 
-    )    
+  (when-not (and  (not (str/blank? no))
+                  (assist/isnumber? no)
+                  (centrality/node-exist? no)
+                  (fraud/fraudulent? no))
+  
+    (ring/not-found "erro =/")
   )
-  (ring/redirect "/done")
+  (when     (and  (not (str/blank? no))
+                  (assist/isnumber? no)
+                  (centrality/node-exist? no)
+                  (fraud/fraudulent? no))
+  
+    (fraud/delete-fraudulent (assist/cast-int no)) 
+    (core/farness (edges/all-edges)) 
+    (ring/response "done")
+  )
 )
 
 (defn fraud-node-put "Aplica Fraude no No por PUT."
-  [no] 
-  (when-not (str/blank? no)
-    (when (assist/isnumber? no)
-      (when (centrality/node-exist? no)
-        (if (fraud/fraudulent? no)
-          (fraud/delete-fraudulent no) 
-        )
-        (fraud/set-fraudulent (assist/cast-int no))
-        (core/fraud (edges/all-edges))
-      )
-    )    
+  [no]
+  (when-not (and  (not (str/blank? no))
+                  (assist/isnumber? no)
+                  (centrality/node-exist? no))
+  
+    (ring/not-found "erro =/")
   )
-  (ring/redirect "/done")
+
+  (when     (and  (not (str/blank? no))
+                  (assist/isnumber? no)
+                  (centrality/node-exist? no))
+  
+    (if (fraud/fraudulent? no)
+      (fraud/delete-fraudulent (assist/cast-int no)) 
+    )
+    (core/farness (edges/all-edges))
+    (fraud/set-fraudulent (assist/cast-int no))
+    (core/fraud (edges/all-edges))
+    (ring/response "done")
+  )
 )
 
 (defroutes routes

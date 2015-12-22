@@ -3,6 +3,7 @@
             [compojure.route :as route]
             [compojure.handler :as handler]
             [ring.middleware.json :as middleware]
+            [ring.util.response :as ring]
             [wspsql.controllers.edges :as edges]
             [wspsql.controllers.centrality :as centrality]
             [wspsql.controllers.fraud :as fraud]
@@ -27,8 +28,6 @@
       (layout/standard nil nil))
     (ANY "/" []
         (layout/method-not-allowed [:options :get]))
-    (ANY "/done" [] 
-      (layout/done ))
     (route/not-found (layout/four-oh-four))
 )
 

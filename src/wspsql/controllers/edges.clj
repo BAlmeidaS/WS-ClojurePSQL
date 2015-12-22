@@ -75,55 +75,62 @@
 
 (defn create-post "Criacao de Edge por POST"
   [A B]
-  (when-not (or (str/blank? A) (str/blank? B))
-    (when (and (assist/isnumber? A) (assist/isnumber? B))
-      (when-not (= A B)
-        (if (edges/exist? A B)
-          (println (str "Ligacao " A "-" B " ja cadastrado"))
-          (edges/create (assist/cast-int A) (assist/cast-int B))
-        )
-      )      
-    )    
-  )
-  (ring/redirect "/edges/")
+  (when   (and (not (or (str/blank? A) (str/blank? B)))
+                (and (assist/isnumber? A) (assist/isnumber? B))
+                (not (= A B)))      
+    (if (edges/exist? A B)
+      (println (str "Ligacao " A "-" B " ja cadastrado"))
+      (edges/create (assist/cast-int A) (assist/cast-int B))
+    )           
+  ) 
+  (ring/redirect "/edges/") 
 )
 
 (defn delete "Delecao de Edge por DELETE"
-  ([A B]
-  (when-not (or (str/blank? A) (str/blank? B))
-    (when (and (assist/isnumber? A) (assist/isnumber? B))
-      (when-not (= A B)
-        (when (edges/exist? A B)
-          (edges/delete (assist/cast-int A) (assist/cast-int B))
-          (core/farness (edges/all-edges))
-          ;Se o no deixar de existir e ele possuir uma fraude, essa fraude deve ser deletada
-          (if (not (centrality/node-exist? (assist/cast-int A))) 
-            (if (fraud/fraudulent? (assist/cast-int A)) (fraud/delete-fraudulent (assist/cast-int A)))
-          )
-          (if (not (centrality/node-exist? (assist/cast-int B))) 
-            (if (fraud/fraudulent? (assist/cast-int B)) (fraud/delete-fraudulent (assist/cast-int B)))
-          )
-        )
-      )      
-    )    
-  )
-  (ring/redirect "/done")
+  [A B]
+  (when-not(and (not (or (str/blank? A) (str/blank? B)))
+                (and (assist/isnumber? A) (assist/isnumber? B))
+                (not (= A B))
+                (edges/exist? A B))
+
+    (ring/not-found "erro =/")
+  ) 
+  (when  (and (not (or (str/blank? A) (str/blank? B)))
+              (and (assist/isnumber? A) (assist/isnumber? B))
+              (not (= A B))
+              (edges/exist? A B))
+
+    (edges/delete (assist/cast-int A) (assist/cast-int B))
+    (core/farness (edges/all-edges))
+    ;Se o no deixar de existir e ele possuir uma fraude, essa fraude deve ser deletada
+    (if (not (centrality/node-exist? (assist/cast-int A))) 
+      (if (fraud/fraudulent? (assist/cast-int A)) (fraud/delete-fraudulent (assist/cast-int A)))
+    )
+    (if (not (centrality/node-exist? (assist/cast-int B))) 
+      (if (fraud/fraudulent? (assist/cast-int B)) (fraud/delete-fraudulent (assist/cast-int B)))
+    )
+    (ring/response "done")
   )
 )
 
 (defn create-put "Criacao de Edge por PUT"
   [A B]
-  (when-not (or (str/blank? A) (str/blank? B))
-    (when (and (assist/isnumber? A) (assist/isnumber? B))
-      (when-not (= A B)
-        (if (edges/exist? A B)
-          (edges/delete (assist/cast-int A) (assist/cast-int B)) ;PUT ira incluir de qualquer jeito, por isso, deleta (se existir) antes de incluir
-        )
-        (edges/create (assist/cast-int A) (assist/cast-int B))
-      )      
-    )    
+  (when-not(and (not (or (str/blank? A) (str/blank? B)))
+                (and (assist/isnumber? A) (assist/isnumber? B))
+                (not (= A B)))
+
+    (ring/not-found "erro =/")
   )
-  (ring/redirect "/done")
+  (when   (and (not (or (str/blank? A) (str/blank? B)))
+                (and (assist/isnumber? A) (assist/isnumber? B))
+                (not (= A B)))
+
+    (if (edges/exist? A B)
+      (edges/delete (assist/cast-int A) (assist/cast-int B)) ;PUT ira incluir de qualquer jeito, por isso, deleta (se existir) antes de incluir
+    )
+    (edges/create (assist/cast-int A) (assist/cast-int B))
+    (ring/response "done")
+  )    
 )
 
 

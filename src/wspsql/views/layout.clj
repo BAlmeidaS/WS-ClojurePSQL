@@ -28,20 +28,16 @@
             "]))
 
 (defn four-oh-four []
-  (standard "Page Not Found"
-          [:div {:id "four-oh-four"}
-           "Essa página não existe =["]))
-
-(defn done []
   (h/html5
     [:head
       [:meta {:charset "utf-8"}]
     ]
     [:body
-      [:div "done"]
+      [:div "Essa página não existe =["]
     ]
   )
 )
+
 
 (defn options
   ([] (options #{:options} nil))
