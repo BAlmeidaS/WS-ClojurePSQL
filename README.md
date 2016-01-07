@@ -56,7 +56,6 @@ As tabelas criadas foram:
 | ------------- |:-------------:| :-----:| :-----: |
 | `Data Type`     | `integer` | `integer` | `timestamp` |
 
-A coluna created guarda a data de inclusão daquele nó. Essa informação é importante pois o sistema verifica quando foi a utima inclusão de uma edge, se ela for anterior a data do último cálculo de centralidade, o sistema não recalcula a centralidade de novo, quando for requisitado. Essa otimização não tem relação com fraudes. Quando uma fraude é inserida ou deletada o cálculo de centralidade impre é feito impreterivelmente, desconsiderando essa otimização.
 
 | *CENTRALITY*         | NO          | Closeness  | Farness |
 | ------------- |:-------------:| :-----:| :-----: |
@@ -64,11 +63,6 @@ A coluna created guarda a data de inclusão daquele nó. Essa informação é im
 
 Foi uma opção guardar o farness. Ele poderia sempre ser calculado.
 
-| *UPDATESYS*         | sys         | update|
-| ------------- |:-------------:| :-----:| 
-| `Data Type`     | `varchar(16)` | `timestamp` |
-
-A coluna update guarda a data do último cálculo de centralidade do sistema. Utilização explicada na tabela de EDGES.
 
 | *FRAUD*         | no         | applied|
 | ------------- |:-------------:| :-----:| 

@@ -9,15 +9,6 @@
   )
 )
 
-;usados para calcular o farness
-(def vectors [])
-(def tempBase [])
-(def nos #{})
-(def tempVetor)
-(def tempRestrict)
-(def tempX)
-
-
 ;funcao auxiliar para initial-edges
 (defn validate-n-insert 
   "valida se a edge ja esta cadastrado e o insere no banco."
@@ -65,67 +56,56 @@
   ([restrict] (reduce + (map :dist restrict)))
 
   ([x base vetor restrict]
+    (let [vectors (search (x 0) base)
+         tempBase (vec (remove (set vectors) base))
+         nos (clojure.set/difference 
+          (set (link-nodes (x 0) vectors)) 
+          (set (map :no restrict)))
+         tempVetor (into vetor nos)
+         tempRestrict (-> restrict
+                          (into (map 
+                           #(hash-map :no %1 :dist %2)
+                           (vec nos) 
+                           (vec (take (count nos) (repeat (+ (x 1) 1)))))))] 
+ 
+     (if-not (empty? tempVetor)
+       (let [tempX (-> []
+                       (assoc-in [0] (tempVetor 0))
+                       (assoc-in [1] 
+                        (-> (filter #(= (get % :no) (tempVetor 0)) tempRestrict)
+                            first
+                            :dist)))]
+         (farness-node tempX tempBase (vec (drop 1 tempVetor)) tempRestrict))
+       (farness-node tempRestrict)))))
 
-   (alter-var-root #'vectors (constantly (search (x 0) base)))
-   (alter-var-root #'tempBase (constantly (vec (remove (set vectors) base))))
-   (alter-var-root #'nos (constantly (clojure.set/difference 
-    (into #{} (link-nodes (x 0) vectors)) 
-    (into #{} (map :no restrict)))))
-
-   (alter-var-root #'tempVetor (constantly (into vetor nos)))
-   (alter-var-root #'tempRestrict (constantly restrict))
-   (alter-var-root #'tempRestrict (constantly 
-     (into tempRestrict
-      (map 
-       #(hash-map :no %1 :dist %2)
-       (vec nos) 
-       (vec (take (count nos) (repeat (+ (x 1) 1))))))))
-
-   (when-not (empty? tempVetor)
-      (alter-var-root #'tempX (constantly []))
-      (alter-var-root #'tempX (constantly (assoc-in tempX [0] (tempVetor 0))))
-      (alter-var-root #'tempX (constantly (assoc-in tempX [1] 
-      ((first 
-       (filter #(= (get % :no) (tempVetor 0)) tempRestrict)) 
-       :dist)))))
-
-   (if (empty? tempVetor) 
-     (farness-node tempRestrict)
-     (farness-node tempX tempBase (vec (drop 1 tempVetor)) tempRestrict))))
-
-(defn distance-node
+(defn distance-nodes
   "retorna um vetor com os as distances de todos os nos do grafo para o no analisado"
-  ([x base] (distance-node [x 0] base [] #{}))
+  ([x base] (distance-nodes [x 0] base [] #{}))
 
   ([restrict] (vec restrict))
 
   ([x base vetor restrict]
-   (alter-var-root #'vectors (constantly (search (x 0) base)))
-   (alter-var-root #'tempBase (constantly (vec (remove (set vectors) base))))
-   (alter-var-root #'nos (constantly (clojure.set/difference 
-   (set (link-nodes (x 0) vectors)) 
-   (set (map :no restrict)))))
-
-   (alter-var-root #'tempVetor (constantly (into vetor nos)))
-   (alter-var-root #'tempRestrict (constantly restrict))
-   (alter-var-root #'tempRestrict (constantly 
-    (into tempRestrict
-     (map 
-      #(hash-map :no %1 :dist %2)
-      (vec nos) 
-      (vec (take (count nos) (repeat (+ (x 1) 1))))))))  
-
-   (when-not (empty? tempVetor)
-     (alter-var-root #'tempX (constantly []))
-     (alter-var-root #'tempX (constantly (assoc-in tempX [0] (tempVetor 0))))
-     (alter-var-root #'tempX (constantly (assoc-in tempX [1] 
-     ((first 
-      (filter #(= (get % :no) (tempVetor 0)) tempRestrict)) 
-      :dist)))))
-
-   (if (empty? tempVetor) 
-     (distance-node tempRestrict)
-     (distance-node tempX tempBase (vec (drop 1 tempVetor)) tempRestrict))))
+   (let [vectors (search (x 0) base)
+         tempBase (vec (remove (set vectors) base))
+         nos (clojure.set/difference 
+          (set (link-nodes (x 0) vectors)) 
+          (set (map :no restrict)))
+         tempVetor (into vetor nos)
+         tempRestrict (-> restrict
+                          (into (map 
+                           #(hash-map :no %1 :dist %2)
+                           (vec nos) 
+                           (vec (take (count nos) (repeat (+ (x 1) 1)))))))] 
+ 
+     (if-not (empty? tempVetor)
+       (let [tempX (-> []
+                       (assoc-in [0] (tempVetor 0))
+                       (assoc-in [1] 
+                        (-> (filter #(= (get % :no) (tempVetor 0)) tempRestrict)
+                            first
+                            :dist)))]
+         (distance-nodes tempX tempBase (vec (drop 1 tempVetor)) tempRestrict))
+       (distance-nodes tempRestrict)))))
 
 (defn cascade-fraud 
   [no dist] 
@@ -141,7 +121,7 @@
 (defn fraud-node 
   [no base]
   (when-not (and (fraud/fraudulent? no) (fraud/applied-fraud? no))
-    (let [dist (distance-node no base)] (cascade-fraud no dist))))
+    (let [dist (distance-nodes no base)] (cascade-fraud no dist))))
 
 (defn fraud 
   [base]

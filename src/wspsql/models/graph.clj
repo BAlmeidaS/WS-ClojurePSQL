@@ -2,16 +2,12 @@
   (:require [clojure.java.jdbc :as sql]
   			[wspsql.models.migration :as migration]))
 
-(defn exp 
+(defn pow 
   "Funcao que calcula exponencial (x ^ n)."
   [x n]
   (if (zero? n) 
   	1
-    (* x (exp x (dec n)))))
-
-;closeness e farness sao usados em update-fraud-node 
-(def closeness 0.0)
-(def farness 0.0)
+    (* x (pow x (dec n)))))
 
 (defn all 
   "Retorna um vetor com todas as infoormacoes da tabela centralidade ordenados por score decrescente."
@@ -37,14 +33,15 @@
 (defn update-fraud-node 
   "Realize o update de fraude no No relativo a sua distancia DIST do no fraudulento."
   [no dist] 
-  (when-let [query (-> (sql/query migration/spec [(str "select * from centrality where no =" no)]) 
+  (if-let [query (-> (sql/query migration/spec [(str "select * from centrality where no =" no)]) 
   			               seq)]
-    (alter-var-root #'closeness (constantly (-> query first :closeness double)))
-    (alter-var-root #'closeness (constantly (* closeness (- 1 (exp 0.5 dist))))) ;(1 - (1/2)^k)
-    (if-not (= closeness 0.0) 
-      (alter-var-root #'farness (constantly (int (/ 1 closeness))))
-      (alter-var-root #'farness (constantly 0)))
-    (sql/update! migration/spec :centrality {:no no, :closeness (with-precision 10 (bigdec closeness)), :farness farness} ["no = ?" no])))
+    (let [closeness (-> query 
+                        first 
+                        :closeness 
+                        double
+                        (* (- 1 (pow 0.5 dist)))) ;(1 - (1/2)^k)
+          farness (if-not (= closeness 0.0) (int (/ 1 closeness)) 0)]
+      (sql/update! migration/spec :centrality {:no no, :closeness (with-precision 10 (bigdec closeness)), :farness farness} ["no = ?" no]))))
 
 (defn node-exist? 
   "Funcao que retorna true se o nó existe"

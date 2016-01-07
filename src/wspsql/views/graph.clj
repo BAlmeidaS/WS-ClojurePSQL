@@ -5,14 +5,12 @@
 
 
 (defn display-edges [edges]
-  [:div {:class "nodes sixteen columns alpha omega"}
+  [:div {:class "edges"}
    (map
-    (fn [edges] [:div {:class "nodes_centrality" :style "position: relative; left: 25px; line-height: 40%;"} [:h3 {:class "nodes"} (str (:no edges) " - " (format "%1.8f" (:closeness edges)) )]])
+    (fn [edges] [:div {:class "graph" :style "position: relative; left: 25px; line-height: 40%;"} [:h3 {:class "nodes"} (str (:no edges) " - " (format "%1.8f" (:closeness edges)) )]])
     edges)])
 
 (defn index [edges]
   (layout/standard "nodes"
-                 [:div [:h2 {:class "tabela"} "NO - SCORE (CLOSENESS)"]]
-                 (display-edges edges)
-  )
-)
+                 [:div [:h2 {:class "graph_table"} "NO - SCORE (CLOSENESS)"]]
+                 (display-edges edges)))

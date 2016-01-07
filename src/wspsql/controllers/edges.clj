@@ -6,7 +6,6 @@
             [wspsql.models.edges :as edges]
             [wspsql.views.layout :as layout]
             [wspsql.views.edges :as layout_edges]
-            [wspsql.controllers.assist :as assist]
             [wspsql.controllers.core :as core]
             [wspsql.models.graph :as graph]
             [wspsql.models.fraud :as fraud]          
@@ -57,70 +56,80 @@
 
 (defn index []  (layout_edges/index (edges/all)))
 
-(defn create-post 
+(defn create-post-edge 
   "Criacao de Edge por POST"
   [A B]
   (when (and (not (or (str/blank? A) (str/blank? B)))
-             (and (assist/isnumber? A) (assist/isnumber? B))
+             (and 
+              (let [s (drop-while #(Character/isDigit %) A)] (empty? s))
+              (let [s (drop-while #(Character/isDigit %) B)] (empty? s)))
              (not (= A B)))      
-    (if (edges/exist? A B)
-      (println (str "Ligacao " A "-" B " ja cadastrado"))
-      (edges/create (assist/cast-int A) (assist/cast-int B)))) 
+    (if-not (edges/exist? A B)
+      (edges/create (int (read-string A)) (int (read-string B))))) 
   (ring/redirect "/edges/"))
 
-(defn delete 
+
+(defn delete-edge
   "Delecao de Edge por DELETE"
   [A B]
   (when-not (and (not (or (str/blank? A) (str/blank? B)))
-                 (and (assist/isnumber? A) (assist/isnumber? B))
+                 (and 
+                  (let [s (drop-while #(Character/isDigit %) A)] (empty? s))
+                  (let [s (drop-while #(Character/isDigit %) B)] (empty? s)))
                  (not (= A B))
                  (edges/exist? A B))
     (ring/not-found "erro =/")) 
 
   (when  (and (not (or (str/blank? A) (str/blank? B)))
-              (and (assist/isnumber? A) (assist/isnumber? B))
+              (and 
+               (let [s (drop-while #(Character/isDigit %) A)] (empty? s))
+               (let [s (drop-while #(Character/isDigit %) B)] (empty? s)))
               (not (= A B))
               (edges/exist? A B))
-    (edges/delete (assist/cast-int A) (assist/cast-int B))
+    (edges/delete (int (read-string A)) (int (read-string B)))
     (core/farness (edges/all-edges))
     ;Se o no deixar de existir e ele possuir uma fraude, essa fraude deve ser deletada
-    (if (not (graph/node-exist? (assist/cast-int A))) 
+    (if (not (graph/node-exist? (int (read-string A)))) 
       (if (fraud/fraudulent? 
-        (assist/cast-int A)) 
-        (fraud/delete-fraudulent (assist/cast-int A))))
-    (if (not (graph/node-exist? (assist/cast-int B))) 
+        (int (read-string A))) 
+        (fraud/delete-fraudulent (int (read-string A)))))
+    (if (not (graph/node-exist? (int (read-string B)))) 
       (if (fraud/fraudulent? 
-        (assist/cast-int B)) 
-        (fraud/delete-fraudulent (assist/cast-int B))))
+        (int (read-string B))) 
+        (fraud/delete-fraudulent (int (read-string B)))))
     (ring/response "done")))
 
-(defn create-put 
+(defn create-put-edge
   "Criacao de Edge por PUT"
   [A B]
   (when-not (and (not (or (str/blank? A) (str/blank? B)))
-                 (and (assist/isnumber? A) (assist/isnumber? B))
+                 (and 
+                  (let [s (drop-while #(Character/isDigit %) A)] (empty? s))
+                  (let [s (drop-while #(Character/isDigit %) B)] (empty? s)))
                  (not (= A B)))
 
     (ring/not-found "erro =/"))
   
   (when (and (not (or (str/blank? A) (str/blank? B)))
-             (and (assist/isnumber? A) (assist/isnumber? B))
+             (and 
+              (let [s (drop-while #(Character/isDigit %) A)] (empty? s))
+              (let [s (drop-while #(Character/isDigit %) B)] (empty? s)))
              (not (= A B)))
 
     (if (edges/exist? A B)
-      (edges/delete (assist/cast-int A) (assist/cast-int B))) ;PUT ira incluir de qualquer jeito, por isso, deleta (se existir) antes de incluir
-    (edges/create (assist/cast-int A) (assist/cast-int B))
+      (edges/delete (int (read-string A)) (int (read-string B)))) ;PUT ira incluir de qualquer jeito, por isso, deleta (se existir) antes de incluir
+    (edges/create (int (read-string A)) (int (read-string B)))
     (ring/response "done")))
 
 (defroutes routes
   (GET "/" [] 
     (index))
   (POST "/" [no_a no_b] 
-    (create-post no_a no_b))
+    (create-post-edge  no_a no_b))
   (DELETE "/:A/:B" [A B] 
-    (delete A B))
+    (delete-edge A B))
   (PUT "/:A/:B" [A B] 
-    (create-put A B))
+    (create-put-edge A B))
   (OPTIONS "/" []
     (layout/options [:options :get :head :put :post :delete] options-descript))
   (HEAD "/" [] 

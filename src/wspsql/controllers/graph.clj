@@ -7,7 +7,6 @@
             [wspsql.views.layout :as layout]
             [wspsql.views.graph :as layout_graph]
             [wspsql.controllers.core :as core]
-            [wspsql.controllers.assist :as assist]
             [wspsql.models.graph :as graph]
             [wspsql.models.migration :as migration]
             [wspsql.models.fraud :as fraud]))
@@ -57,9 +56,9 @@
   "Retorna as informacoes do no em um request GET com parametro NO"
   [no] 
   (core/farness (edges/all-edges))
-  (when (and (not(str/blank? no)) (assist/isnumber? no))
+  (when (and (not(str/blank? no)) (let [s (drop-while #(Character/isDigit %) no)] (empty? s)))
     (if (graph/node-exist? no)
-      (ring/response (node-info (assist/cast-int no)))
+      (ring/response (node-info (int (read-string no))))
       (ring/not-found "null"))))
 
 (defroutes routes

@@ -30,14 +30,6 @@
     true
     false))
 
-;;DELETAR
-;(defn last-insert 
-;  "Retorna a data do ultimo edge cadastrado."
-;  []
-;  (-> (into [] (sql/query migration/spec ["select created from edges order by created desc limit 1"]))
-;      first
-;      :created))
-
 (defn create 
   "Cria edge A - B."
   [A B]

@@ -7,7 +7,6 @@
             [wspsql.views.layout :as layout]
             [wspsql.views.fraud :as layout_fraud]
             [wspsql.controllers.core :as core]
-            [wspsql.controllers.assist :as assist]
             [wspsql.models.graph :as graph]
             [wspsql.models.fraud :as fraud]
   )
@@ -54,26 +53,26 @@
   [no]
   (core/farness (edges/all-edges))
   (when (and (not (str/blank? no))
-             (assist/isnumber? no)
+             (let [s (drop-while #(Character/isDigit %) no)] (empty? s))
              (graph/node-exist? no)
              (not (fraud/fraudulent? no)))
-    (fraud/set-fraudulent (assist/cast-int no))
+    (fraud/set-fraudulent (int (read-string no)))
     (core/fraud (edges/all-edges)))
   (ring/redirect "/fraud/"))
 
-(defn remove-fraud 
+(defn delete-fraud 
   "Remove Fraude do No por DELETE."
   [no]
   (when-not (and (not (str/blank? no))
-                 (assist/isnumber? no)
+                 (let [s (drop-while #(Character/isDigit %) no)] (empty? s))
                  (graph/node-exist? no)
                  (fraud/fraudulent? no))  
     (ring/not-found "erro"))
   (when (and (not (str/blank? no))
-             (assist/isnumber? no)
+             (let [s (drop-while #(Character/isDigit %) no)] (empty? s))
              (graph/node-exist? no)
              (fraud/fraudulent? no))  
-    (fraud/delete-fraudulent (assist/cast-int no)) 
+    (fraud/delete-fraudulent (int (read-string no))) 
     (core/farness (edges/all-edges)) 
     (ring/response "done")))
 
@@ -82,17 +81,17 @@
   [no]
   (core/farness (edges/all-edges))
   (when-not (and (not (str/blank? no))
-                 (assist/isnumber? no)
+                 (let [s (drop-while #(Character/isDigit %) no)] (empty? s))
                  (graph/node-exist? no))  
     (ring/not-found "erro"))
 
   (when (and (not (str/blank? no))
-             (assist/isnumber? no)
+             (let [s (drop-while #(Character/isDigit %) no)] (empty? s))
              (graph/node-exist? no))
     (if (fraud/fraudulent? no)
-      (fraud/delete-fraudulent (assist/cast-int no)))
+      (fraud/delete-fraudulent (int (read-string no))))
     (core/farness (edges/all-edges))
-    (fraud/set-fraudulent (assist/cast-int no))
+    (fraud/set-fraudulent (int (read-string no)))
     (core/fraud (edges/all-edges))
     (ring/response "done")))
 
@@ -102,7 +101,7 @@
   (POST "/" [no] 
     (fraud-node-post no))
   (DELETE "/:no" [no] 
-    (remove-fraud no))
+    (delete-fraud no))
   (PUT "/:no" [no] 
     (fraud-node-put no))
   (OPTIONS "/" []

@@ -70,10 +70,10 @@
 ;;testes de inclusao e mudanca de nos diretamente
 (deftest test-graph
   ;testes da funcao exponencial
-  (is (= (graph/exp 2 8) 256))
-  (is (= (graph/exp 1/2 4) 1/16))
-  (is (= (graph/exp 0.5 8) 0.00390625))
-  (is (= (graph/exp 1/2 32) 1/4294967296))
+  (is (= (graph/pow 2 8) 256))
+  (is (= (graph/pow 1/2 4) 1/16))
+  (is (= (graph/pow 0.5 8) 0.00390625))
+  (is (= (graph/pow 1/2 32) 1/4294967296))
 
   ;insercao de nos com centralidade
   (graph/insert-node {:no 1, :closeness 0.2, :farness 5})

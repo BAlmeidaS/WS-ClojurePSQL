@@ -23,7 +23,6 @@
   [no]
   (sql/delete! migration/spec :fraud ["no=? " no]))
 
-
 (defn apply-fraudulent 
   "Seta fraude de um no como aplicada."
   [no]

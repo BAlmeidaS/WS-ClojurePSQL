@@ -10,6 +10,7 @@
             [wspsql.models.migration :as migration]
             [clojure.data.json :as json]))
 
+;;Testa inclusão de edges no banco atraves do txt
 (deftest test-initial-edges
   (migration/remove-all-data)
   (core/initial-edges "test.txt")
@@ -51,17 +52,20 @@
   (is (edges/exist? 4 5))
   (is (edges/exist? 5 6)))
 
+;;Testa a busca de edges, dentro de um vetor de edges, que possuam o no procurado
 (deftest test-search
   (migration/remove-all-data)
   (is ( = (set (core/search 1 [{:noa 1, :nob 2}, {:noa 2, :nob 4}, {:noa 2, :nob 5}, {:noa 4, :nob 1}, {:noa 4, :nob 5}, {:noa 1, :nob 3}]))
           #{{:noa 1, :nob 2}, {:noa 1, :nob 3}, {:noa 4, :nob 1}})))
 
+;;Testa a a busca pelos nos que estão ligados ao no referência
 (deftest test-link-nodes
   (migration/remove-all-data)
   (is (-> (core/link-nodes 1 [{:noa 6, :nob 1}, {:noa 1, :nob 2}, {:noa 1, :nob 3}, {:noa 4, :nob 1}])
           set
           (= #{6, 2, 3, 4}))))
 
+;;Testa a função que calcula o farness de um nó
 (deftest test-farness-node
   (test-initial-edges)
   (is (= (core/farness-node 1 (edges/all-edges)) 9))
@@ -71,24 +75,25 @@
   (is (= (core/farness-node 5 (edges/all-edges)) 9))
   (is (= (core/farness-node 6 (edges/all-edges)) 7)))
 
-(deftest test-distance-node
+;;Testa a função que devolve um vetor com as ditâncias dos outros nos do grafo ao nó referência
+(deftest test-distance-nodes
   (test-initial-edges)
-  (is (= (set (core/distance-node 1 (edges/all-edges)))
+  (is (= (set (core/distance-nodes 1 (edges/all-edges)))
          (set [{:dist 1, :no 2} {:dist 1, :no 3} {:dist 2, :no 4} {:dist 3, :no 5} {:dist 2, :no 6}])))
 
-  (is (= (set (core/distance-node 2 (edges/all-edges)))
+  (is (= (set (core/distance-nodes 2 (edges/all-edges)))
          (set [{:dist 1, :no 1} {:dist 2, :no 3} {:dist 1, :no 4} {:dist 2, :no 5} {:dist 2, :no 6}])))
 
-  (is (= (set (core/distance-node 3 (edges/all-edges)))
+  (is (= (set (core/distance-nodes 3 (edges/all-edges)))
          (set [{:dist 1, :no 1} {:dist 2, :no 2} {:dist 1, :no 4} {:dist 2, :no 5} {:dist 1, :no 6}])))
 
-  (is (= (set (core/distance-node 4 (edges/all-edges)))
+  (is (= (set (core/distance-nodes 4 (edges/all-edges)))
          (set [{:dist 2, :no 1} {:dist 1, :no 2} {:dist 1, :no 3} {:dist 1, :no 5} {:dist 1, :no 6}])))
 
-  (is (= (set (core/distance-node 5 (edges/all-edges)))
+  (is (= (set (core/distance-nodes 5 (edges/all-edges)))
          (set [{:dist 3, :no 1} {:dist 2, :no 2} {:dist 2, :no 3} {:dist 1, :no 4} {:dist 1, :no 6}])))
 
-  (is (= (set (core/distance-node 6 (edges/all-edges)))
+  (is (= (set (core/distance-nodes 6 (edges/all-edges)))
          (set [{:dist 2, :no 1} {:dist 2, :no 2} {:dist 1, :no 3} {:dist 1, :no 4} {:dist 1, :no 5}]))))
   
 (deftest test-farness
@@ -119,7 +124,7 @@
   (is (= (graph/node-closeness 6) 0.14285714)))
 
 (deftest test-cascade-fraud
-  (test-distance-node)
+  (test-distance-nodes)
   (test-farness)
 
   (fraud/set-fraudulent 1)
@@ -141,7 +146,7 @@
   (is (= (graph/node-closeness 6) 0.10714286)))
 
 (deftest test-fraud-node
-  (test-distance-node)
+  (test-distance-nodes)
   (test-farness)
 
   (fraud/set-fraudulent 1)  
@@ -163,7 +168,7 @@
   (is (= (graph/node-closeness 6) 0.10714286)))
 
 (deftest test-fraud
-  (test-distance-node)
+  (test-distance-nodes)
   (test-farness)
 
   (fraud/set-fraudulent 1)  
