@@ -10,6 +10,7 @@
                   [hiccup "1.0.5"]
                   [ring/ring-jetty-adapter "1.4.0"]
                   [ring/ring-json "0.1.2"]
+                  [org.clojure/data.json "0.2.6"]
                   [ring/ring-defaults "0.1.5"]]
   :plugins [[lein-ring "0.9.7"]]
   :ring { :handler wspsql.handler/app

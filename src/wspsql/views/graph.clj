@@ -1,4 +1,4 @@
-(ns wspsql.views.centrality
+(ns wspsql.views.graph
   (:require [wspsql.views.layout :as layout]
             [hiccup.core :refer [h]]
             [ring.util.anti-forgery :as anti-forgery]))

@@ -5,7 +5,7 @@
             [ring.middleware.json :as middleware]
             [ring.util.response :as ring]
             [wspsql.controllers.edges :as edges]
-            [wspsql.controllers.centrality :as centrality]
+            [wspsql.controllers.graph :as graph]
             [wspsql.controllers.fraud :as fraud]
             [wspsql.views.layout :as layout]
             [wspsql.controllers.core :as core]
@@ -16,7 +16,7 @@
       edges/routes
     )
     (context "/graph" [] 
-      centrality/routes
+      graph/routes
     )
     (context "/fraud" [] 
       fraud/routes

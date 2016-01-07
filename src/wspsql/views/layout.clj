@@ -11,11 +11,10 @@
     [:meta {:name "viewport" :content
             "width=device-width, initial-scale=1, maximum-scale=1"}]
     [:title title]
-    (h/include-css "")
     (h/include-css "http://fonts.googleapis.com/css?family=Sigmar+One&v1")]
    [:body
     [:div {:id "header"}
-     [:h1 {:class "container"} "Web Service - Analise Grafos"]]
+     [:h1 "Web Service - Analise Grafos"]]
     [:div {:id "content" :class "container"} body]]))
 
 (defn home []
@@ -37,7 +36,6 @@
     ]
   )
 )
-
 
 (defn options
   ([] (options #{:options} nil))

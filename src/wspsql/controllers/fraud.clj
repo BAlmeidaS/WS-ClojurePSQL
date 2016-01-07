@@ -8,7 +8,7 @@
             [wspsql.views.fraud :as layout_fraud]
             [wspsql.controllers.core :as core]
             [wspsql.controllers.assist :as assist]
-            [wspsql.models.centrality :as centrality]
+            [wspsql.models.graph :as graph]
             [wspsql.models.fraud :as fraud]
   )
 )
@@ -63,9 +63,10 @@
 
 (defn fraud-node-post "Aplica Fraude no No por POST."
   [no]
+  (core/farness (edges/all-edges))
   (when     (and  (not (str/blank? no))
                   (assist/isnumber? no)
-                  (centrality/node-exist? no)
+                  (graph/node-exist? no)
                   (not (fraud/fraudulent? no)))
 
     (fraud/set-fraudulent (assist/cast-int no))
@@ -78,14 +79,14 @@
   [no]
   (when-not (and  (not (str/blank? no))
                   (assist/isnumber? no)
-                  (centrality/node-exist? no)
+                  (graph/node-exist? no)
                   (fraud/fraudulent? no))
   
-    (ring/not-found "erro =/")
+    (ring/not-found "erro")
   )
   (when     (and  (not (str/blank? no))
                   (assist/isnumber? no)
-                  (centrality/node-exist? no)
+                  (graph/node-exist? no)
                   (fraud/fraudulent? no))
   
     (fraud/delete-fraudulent (assist/cast-int no)) 
@@ -96,16 +97,17 @@
 
 (defn fraud-node-put "Aplica Fraude no No por PUT."
   [no]
+  (core/farness (edges/all-edges))
   (when-not (and  (not (str/blank? no))
                   (assist/isnumber? no)
-                  (centrality/node-exist? no))
+                  (graph/node-exist? no))
   
-    (ring/not-found "erro =/")
+    (ring/not-found "erro")
   )
 
   (when     (and  (not (str/blank? no))
                   (assist/isnumber? no)
-                  (centrality/node-exist? no))
+                  (graph/node-exist? no))
   
     (if (fraud/fraudulent? no)
       (fraud/delete-fraudulent (assist/cast-int no)) 

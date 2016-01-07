@@ -1,15 +1,14 @@
-(ns wspsql.controllers.centrality
+(ns wspsql.controllers.graph
   (:require [compojure.core :refer [defroutes GET POST DELETE PUT OPTIONS HEAD ANY]]
             [compojure.route :as route]
             [clojure.string :as str]
             [ring.util.response :as ring]
             [wspsql.models.edges :as edges]
             [wspsql.views.layout :as layout]
-            [wspsql.views.centrality :as layout_centrality]
+            [wspsql.views.graph :as layout_graph]
             [wspsql.controllers.core :as core]
             [wspsql.controllers.assist :as assist]
-            [wspsql.models.centrality :as centrality]
-            [wspsql.models.updatesys :as updatesys]
+            [wspsql.models.graph :as graph]
             [wspsql.models.migration :as migration]
             [wspsql.models.fraud :as fraud]
   )
@@ -38,36 +37,32 @@
 
 (defn update-centrality "Realiza Update da centralide, retorna um vetor com os Nos e suas Centralidades."
   [base]
-  (if (-> (edges/last-insert) (compare (updatesys/get-update)) pos?) ;So recalcula a centralidade se a data da ultimo calculo for anterior a inclusao do ultimo no.
-      (core/farness base)
-  )
-  (centrality/all-closeness)
+  (core/farness base)
+  (graph/all-closeness)
 )
 
+(defn index [] (layout_graph/index (update-centrality (edges/all-edges))))
 
-(defn index [] (layout_centrality/index (update-centrality (edges/all-edges))))
-
-(defn nodecloseness "Retorna o closeness de um no em um vetor de nos."
+(defn nodeCloseness "Retorna o closeness de um no em um vetor de nos."
   [no nodes]
   (if (empty? nodes) []
-    (conj (nodecloseness no (subvec nodes 1))
+    (conj (nodeCloseness no (subvec nodes 1))
       (if (= no ((nodes 0) :no)) [] [])
     )
   )
 )
 
-(defn nodeinfo "Retorna um map com as informacoes do No."
+(defn nodeInfo "Retorna um map com as informacoes do No."
   [no]
-  (core/farness (edges/all-edges))
-  (def x (centrality/node-closeness no))
-  (if (> x 0)
+  (def x (graph/node-closeness no))
+  (if (> x 0.0)
     (zipmap
       [:no :closeness :farness :fraudulent]
-      (vector no x (float (/ 1 x)) (fraud/fraudulent? no) )
+      (vector no x (Math/round (/ 1 x)) (fraud/fraudulent? no) )
     )
     (zipmap
       [:no :closeness :farness :fraudulent]
-      (vector no 0 0.0 (fraud/fraudulent? no) )
+      (vector no 0 0 (fraud/fraudulent? no) )
     )
   )
 
@@ -75,9 +70,10 @@
 
 (defn nodeGet "Retorna as informacoes do no em um request GET com parametro NO"
   [no] 
+  (core/farness (edges/all-edges))
   (when (and (not(str/blank? no)) (assist/isnumber? no))
-    (if (centrality/node-exist? no)
-      (ring/response (nodeinfo (assist/cast-int no)))
+    (if (graph/node-exist? no)
+      (ring/response (nodeInfo (assist/cast-int no)))
       (ring/not-found "null") 
     )    
   )  
