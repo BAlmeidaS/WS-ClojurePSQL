@@ -17,11 +17,6 @@
 (def tempRestrict)
 (def tempX)
 
-(def x)
-(def return)
-(def dist)
-(def no)
-
 
 ;funcao auxiliar para initial-edges
 (defn validate-n-insert 
@@ -54,14 +49,14 @@
       (search x (subvec y 1)))))
 
 (defn link-nodes
-    "Funcao que retorna os valores diferentes de x 
-    pertencentes a um vetor de vetores"
-    [x y]
-      (if (empty? y) 
-        []
-        (if (= x ((y 0) :noa)) 
-          (conj (link-nodes x (subvec y 1)) ((y 0) :nob))
-          (conj (link-nodes x (subvec y 1)) ((y 0) :noa)))))
+  "Funcao que retorna os valores diferentes de x 
+  pertencentes a um vetor de vetores"
+  [x y]
+    (if (empty? y) 
+      []
+      (if (= x ((y 0) :noa)) 
+        (conj (link-nodes x (subvec y 1)) ((y 0) :nob))
+        (conj (link-nodes x (subvec y 1)) ((y 0) :noa)))))
 
 (defn farness-node
   "retorna o farness de um nó x em um grafo"
@@ -70,6 +65,7 @@
   ([restrict] (reduce + (map :dist restrict)))
 
   ([x base vetor restrict]
+
    (alter-var-root #'vectors (constantly (search (x 0) base)))
    (alter-var-root #'tempBase (constantly (vec (remove (set vectors) base))))
    (alter-var-root #'nos (constantly (clojure.set/difference 
@@ -95,29 +91,29 @@
 
    (if (empty? tempVetor) 
      (farness-node tempRestrict)
-     (farness-node tempX tempBase (into [] (drop 1 tempVetor)) tempRestrict))))
+     (farness-node tempX tempBase (vec (drop 1 tempVetor)) tempRestrict))))
 
 (defn distance-node
   "retorna um vetor com os as distances de todos os nos do grafo para o no analisado"
   ([x base] (distance-node [x 0] base [] #{}))
 
-  ([restrict] (into [] restrict))
+  ([restrict] (vec restrict))
 
   ([x base vetor restrict]
    (alter-var-root #'vectors (constantly (search (x 0) base)))
    (alter-var-root #'tempBase (constantly (vec (remove (set vectors) base))))
    (alter-var-root #'nos (constantly (clojure.set/difference 
-   (into #{} (link-nodes (x 0) vectors)) 
-   (into #{} (map :no restrict)))))
+   (set (link-nodes (x 0) vectors)) 
+   (set (map :no restrict)))))
 
    (alter-var-root #'tempVetor (constantly (into vetor nos)))
    (alter-var-root #'tempRestrict (constantly restrict))
    (alter-var-root #'tempRestrict (constantly 
-     (into tempRestrict
-      (map 
-       #(hash-map :no %1 :dist %2)
-       (vec nos) 
-       (vec (take (count nos) (repeat (+ (x 1) 1))))))))  
+    (into tempRestrict
+     (map 
+      #(hash-map :no %1 :dist %2)
+      (vec nos) 
+      (vec (take (count nos) (repeat (+ (x 1) 1))))))))  
 
    (when-not (empty? tempVetor)
      (alter-var-root #'tempX (constantly []))
@@ -129,7 +125,7 @@
 
    (if (empty? tempVetor) 
      (distance-node tempRestrict)
-     (distance-node tempX tempBase (into [] (drop 1 tempVetor)) tempRestrict))))
+     (distance-node tempX tempBase (vec (drop 1 tempVetor)) tempRestrict))))
 
 (defn cascade-fraud 
   [no dist] 
@@ -145,13 +141,11 @@
 (defn fraud-node 
   [no base]
   (when-not (and (fraud/fraudulent? no) (fraud/applied-fraud? no))
-    (alter-var-root #'dist (constantly (distance-node no base)))
-    (cascade-fraud no dist)))
+    (let [dist (distance-node no base)] (cascade-fraud no dist))))
 
 (defn fraud 
   [base]
-  (when-not (empty? (fraud/not-applied))
-    (alter-var-root #'x (constantly (fraud/not-applied)))
+  (when-let [x (seq (fraud/not-applied))]
     (loop [data x, index 0]
       (when (seq data)
         (fraud-node ((first data) :no) base)
@@ -160,29 +154,28 @@
 (defn farness
   "calcula a centralidade de todos os nos do banco"
   ([base]
-   (alter-var-root #'x (constantly (apply sorted-set (map #(% :noa) base))))
-   (alter-var-root #'x (constantly (into x (apply sorted-set (map #(% :nob) base)))))
-   (alter-var-root #'return (constantly #{}))
+   (let [x (-> (apply sorted-set (map #(% :noa) base))
+               (into (apply sorted-set (map #(% :nob) base))))]
   	
-   (graph/remove-all)
-
-   (loop [data x index 0]
-     (when (seq data)
-       (alter-var-root #'no (constantly (into {}
-        (map 
-         #(hash-map :no %1 
-                    :closeness (->> %2
-                                    (/ 1)
-                                    (* 1e9)
-                                    (Math/round)
-                                    (* 1e-9) 
-                                    double)
-                    :farness %2)
-          (vector (first data))
-          (vector (farness-node (first data) base))))))
-       (graph/insert-node no)
-       (recur (rest data) (inc index))))
-   (fraud/unapply-all)
-   (fraud base)))
+     (graph/remove-all)
+     (loop [data x index 0]
+       (when (seq data)
+         (let 
+          [no 
+           (into {} (map 
+                     #(hash-map :no %1 
+                                :closeness (->> %2
+                                                (/ 1)
+                                                (* 1e9)
+                                                (Math/round)
+                                                (* 1e-9) 
+                                                double)
+                                :farness %2)
+                     (vector (first data))
+                     (vector (farness-node (first data) base))))]
+           (graph/insert-node no)
+           (recur (rest data) (inc index)))))         
+     (fraud/unapply-all)
+     (fraud base))))
 
 
