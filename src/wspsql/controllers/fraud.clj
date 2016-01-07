@@ -8,9 +8,7 @@
             [wspsql.views.fraud :as layout_fraud]
             [wspsql.controllers.core :as core]
             [wspsql.models.graph :as graph]
-            [wspsql.models.fraud :as fraud]
-  )
-)
+            [wspsql.models.fraud :as fraud]))
 
 ;JSON de resposta de OPTIONS
 (def options-descript 
@@ -44,20 +42,19 @@
 
 (defn index 
   []   
-  (core/farness (edges/all-edges))
-  (layout_fraud/index (fraud/all)) 
-)
+  (core/farness (edges/show-all-edges))
+  (layout_fraud/index (fraud/show-all)))
 
 (defn fraud-node-post 
   "Aplica Fraude no No por POST."
   [no]
-  (core/farness (edges/all-edges))
+  (core/farness (edges/show-all-edges))
   (when (and (not (str/blank? no))
              (let [s (drop-while #(Character/isDigit %) no)] (empty? s))
              (graph/node-exist? no)
              (not (fraud/fraudulent? no)))
     (fraud/set-fraudulent (int (read-string no)))
-    (core/fraud (edges/all-edges)))
+    (core/fraud (edges/show-all-edges)))
   (ring/redirect "/fraud/"))
 
 (defn delete-fraud 
@@ -73,13 +70,13 @@
              (graph/node-exist? no)
              (fraud/fraudulent? no))  
     (fraud/delete-fraudulent (int (read-string no))) 
-    (core/farness (edges/all-edges)) 
+    (core/farness (edges/show-all-edges)) 
     (ring/response "done")))
 
 (defn fraud-node-put 
   "Aplica Fraude no No por PUT."
   [no]
-  (core/farness (edges/all-edges))
+  (core/farness (edges/show-all-edges))
   (when-not (and (not (str/blank? no))
                  (let [s (drop-while #(Character/isDigit %) no)] (empty? s))
                  (graph/node-exist? no))  
@@ -90,9 +87,9 @@
              (graph/node-exist? no))
     (if (fraud/fraudulent? no)
       (fraud/delete-fraudulent (int (read-string no))))
-    (core/farness (edges/all-edges))
+    (core/farness (edges/show-all-edges))
     (fraud/set-fraudulent (int (read-string no)))
-    (core/fraud (edges/all-edges))
+    (core/fraud (edges/show-all-edges))
     (ring/response "done")))
 
 (defroutes routes

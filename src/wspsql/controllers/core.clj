@@ -5,9 +5,7 @@
         [wspsql.models.graph :as graph]
         [wspsql.models.fraud :as fraud]
         [wspsql.models.migration :as migration]
-        [wspsql.models.edges :as edges]
-  )
-)
+        [wspsql.models.edges :as edges]))
 
 ;funcao auxiliar para initial-edges
 (defn validate-n-insert 

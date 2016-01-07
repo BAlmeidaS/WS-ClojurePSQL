@@ -1,7 +1,6 @@
 (ns wspsql.models.migration
   (:require [clojure.java.jdbc :as sql :refer :all]))
 
-
 (def spec "postgresql://postgres:senha@172.17.0.2:5432/wsclojure")
 
 (defn migrated? 
@@ -32,7 +31,6 @@
    (if-not (empty? (subvec tables 1))
      (drop-tables (subvec tables 1)))))
    
-
 (defn remove-all-data 
   [] 
   (sql/db-do-commands spec (str "delete from edges"))
@@ -43,7 +41,6 @@
 (defn migrate 
   []
   (when-not (migrated?)
-    
     (drop-tables)
 
     (sql/db-do-commands 

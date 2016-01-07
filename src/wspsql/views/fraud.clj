@@ -14,12 +14,12 @@
 
 (defn nodes-fraud-display [nodes-fraud]
   [:div {:class "frauds"}
-    (map
-      (fn [nos] [:h3 {:style "position: relative; left: 25px; line-height: 40%;"} (str (:no nos))])
-      nodes-fraud)])
+   (map
+    (fn [nos] [:h3 {:style "position: relative; left: 25px; line-height: 40%;"} (str (:no nos))])
+    nodes-fraud)])
 
 (defn index [nodes-fraud]
   (layout/standard "edges"
-                 (nodes-fraud-form)
-                 [:div [:h2 {:class "frauds_table" :style "line-height: 80%;"} "Fraudes"]]
-                 (nodes-fraud-display nodes-fraud)))
+   (nodes-fraud-form)
+   [:div [:h2 {:class "frauds_table" :style "line-height: 80%;"} "Fraudes"]]
+   (nodes-fraud-display nodes-fraud)))

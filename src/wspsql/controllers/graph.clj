@@ -29,9 +29,9 @@
   "Realiza Update da centralide, retorna um vetor com os Nos e suas Centralidades."
   [base]
   (core/farness base)
-  (graph/all-closeness))
+  (graph/show-all-closeness))
 
-(defn index [] (layout_graph/index (update-centrality (edges/all-edges))))
+(defn index [] (layout_graph/index (update-centrality (edges/show-all-edges))))
 
 (defn node-closeness 
   "Retorna o closeness de um no em um vetor de nos."
@@ -55,7 +55,7 @@
 (defn node-get 
   "Retorna as informacoes do no em um request GET com parametro NO"
   [no] 
-  (core/farness (edges/all-edges))
+  (core/farness (edges/show-all-edges))
   (when (and (not(str/blank? no)) (let [s (drop-while #(Character/isDigit %) no)] (empty? s)))
     (if (graph/node-exist? no)
       (ring/response (node-info (int (read-string no))))

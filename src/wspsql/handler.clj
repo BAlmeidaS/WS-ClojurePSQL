@@ -21,7 +21,7 @@
   (GET "/" [] 
     (layout/home))
   (OPTIONS "/" []
-    (layout/options [:options :get] {:version "3.0.0"}))
+    (layout/options [:options :get] {:version "4.0.0"}))
   (HEAD "/" [] 
     (layout/standard nil nil))
   (GET "/txt" [] ;endpoint utilizado apenas para carregar os valores no banco - apaga o banco antes de carregar os valores do txt

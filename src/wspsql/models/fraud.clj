@@ -1,9 +1,8 @@
 (ns wspsql.models.fraud
   (:require [clojure.java.jdbc :as sql]
-  			[wspsql.models.migration :as migration]))
+  			    [wspsql.models.migration :as migration]))
 
-
-(defn all 
+(defn show-all 
   "Retorna um vetor com todas os nos fraudelentos e se a fraude já foi aplicada." 
   []
   (vec (sql/query migration/spec ["select * from fraud"])))

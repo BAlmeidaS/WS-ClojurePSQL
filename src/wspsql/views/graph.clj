@@ -12,5 +12,5 @@
 
 (defn index [edges]
   (layout/standard "nodes"
-                 [:div [:h2 {:class "graph_table"} "NO - SCORE (CLOSENESS)"]]
-                 (display-edges edges)))
+   [:div [:h2 {:class "graph_table"} "NO - SCORE (CLOSENESS)"]]
+   (display-edges edges)))

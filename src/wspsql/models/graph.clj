@@ -1,6 +1,6 @@
 (ns wspsql.models.graph
   (:require [clojure.java.jdbc :as sql]
-  			[wspsql.models.migration :as migration]))
+  			    [wspsql.models.migration :as migration]))
 
 (defn pow 
   "Funcao que calcula exponencial (x ^ n)."
@@ -9,12 +9,12 @@
   	1
     (* x (pow x (dec n)))))
 
-(defn all 
+(defn show-all 
   "Retorna um vetor com todas as infoormacoes da tabela centralidade ordenados por score decrescente."
   []
   (vec (sql/query migration/spec ["select * from centrality order by closeness desc"])))
 
-(defn all-closeness
+(defn show-all-closeness
   "Retorna um vetor com os nos e o score deles (closeness) ordenados por score decrescente."
   [] 
   (vec (sql/query migration/spec ["select no, closeness from centrality order by closeness desc"])))

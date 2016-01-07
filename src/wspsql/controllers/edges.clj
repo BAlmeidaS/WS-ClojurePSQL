@@ -8,9 +8,7 @@
             [wspsql.views.edges :as layout_edges]
             [wspsql.controllers.core :as core]
             [wspsql.models.graph :as graph]
-            [wspsql.models.fraud :as fraud]          
-  )
-)
+            [wspsql.models.fraud :as fraud]))
 
 ;JSON de resposta de OPTIONS
 (def options-descript 
@@ -54,7 +52,7 @@
       :required true}},
     :comments "Deleta a ligacao apenas se ela existir."}})
 
-(defn index []  (layout_edges/index (edges/all)))
+(defn index []  (layout_edges/index (edges/show-all)))
 
 (defn create-post-edge 
   "Criacao de Edge por POST"
@@ -87,7 +85,7 @@
               (not (= A B))
               (edges/exist? A B))
     (edges/delete (int (read-string A)) (int (read-string B)))
-    (core/farness (edges/all-edges))
+    (core/farness (edges/show-all-edges))
     ;Se o no deixar de existir e ele possuir uma fraude, essa fraude deve ser deletada
     (if (not (graph/node-exist? (int (read-string A)))) 
       (if (fraud/fraudulent? 

@@ -43,21 +43,21 @@
 
   (edges/delete 1 2)
 
-  (is (= (count (edges/all)) 0))  
+  (is (= (count (edges/show-all)) 0))  
 
   ;Visualizacao das edges
   (edges/create 1 2)
   (edges/create 2 3)
   (edges/create 3 4)
   (edges/create 4 5)
-  (is (= (count (edges/all)) 4))
+  (is (= (count (edges/show-all)) 4))
 
-  (is (= (first (edges/all-edges)) {:noa 1, :nob 2})) 
-  (is (= (last (edges/all-edges)) {:noa 4, :nob 5})) 
+  (is (= (first (edges/show-all-edges)) {:noa 1, :nob 2})) 
+  (is (= (last (edges/show-all-edges)) {:noa 4, :nob 5})) 
 
   ;Remocao geral
   (edges/remove-all)
-  (is (empty? (edges/all)))
+  (is (empty? (edges/show-all)))
   (is (not (edges/exist? 1 2)))
 
   (edges/delete 1 2)
@@ -65,7 +65,7 @@
   (edges/create 1 2)
   (edges/create 1 2)
   (edges/delete 1 2)
-  (is (empty? (edges/all))))
+  (is (empty? (edges/show-all))))
 
 ;;testes de inclusao e mudanca de nos diretamente
 (deftest test-graph
@@ -94,12 +94,12 @@
   (is (= (graph/node-closeness 5) nil))
 
   ;visualizacao dos nos e remocao geral
-  (is (= (count (graph/all)) 4))
-  (is (= (first (graph/all-closeness)) {:no 2, :closeness 0.333333340M})) 
-  (is (= (last (graph/all-closeness)) {:no 4, :closeness 0.200000000M})) 
+  (is (= (count (graph/show-all)) 4))
+  (is (= (first (graph/show-all-closeness)) {:no 2, :closeness 0.333333340M})) 
+  (is (= (last (graph/show-all-closeness)) {:no 4, :closeness 0.200000000M})) 
 
   (graph/remove-all) 
-  (is (empty? (graph/all)))
+  (is (empty? (graph/show-all)))
   (is (not (graph/node-exist? 1))))
 
 ;;testes de inclusao e mudanca de fraudes
@@ -113,7 +113,7 @@
   (fraud/set-fraudulent 5)
 
   ;ve se todas as fruades estão de fato não aplicadas
-  (is (= (count (fraud/all)) 5))
+  (is (= (count (fraud/show-all)) 5))
   (is (= (count (fraud/not-applied)) 5))
 
   (is (false? (fraud/applied-fraud? 1)))
@@ -134,7 +134,7 @@
   (fraud/delete-fraudulent 4)
   (fraud/delete-fraudulent 5)
 
-  (is (= (count (fraud/all)) 3))
+  (is (= (count (fraud/show-all)) 3))
   (is (= (count (fraud/not-applied)) 2))
 
   ;verifica se um no esta na lista de fraudes, independente se a fraude foi contabilizada ou nao
@@ -148,13 +148,13 @@
   ;desaplica todas as fraudes
   (fraud/unapply-all)
 
-  (is (= (count (fraud/all)) 3))
+  (is (= (count (fraud/show-all)) 3))
   (is (= (count (fraud/not-applied)) 3))
 
   ;remove todas as fraudes
   (fraud/remove-all)
 
-  (is (empty? (fraud/all)))
+  (is (empty? (fraud/show-all)))
   (is (empty? (fraud/not-applied))))
 
 ;;Criar duas grafos e testar o utilizacao correta do fator que reduz o score de todos os nos quando um no é dito como fraudulento
@@ -185,7 +185,7 @@
   (is (= (graph/node-closeness 4) 0.15))
 
   (graph/remove-all) 
-  (is (empty? (graph/all)))
+  (is (empty? (graph/show-all)))
 
   ; SEGUNDA grafo : 1-2, 2-3, 3-4, 4-1 
   (graph/insert-node {:no 1, :closeness 0.25, :farness 4})
@@ -243,5 +243,5 @@
   (is (= (graph/node-closeness 4) 0.0))
 
   (graph/remove-all) 
-  (is (empty? (graph/all))))
+  (is (empty? (graph/show-all))))
   

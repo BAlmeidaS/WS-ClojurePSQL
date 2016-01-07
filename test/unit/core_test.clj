@@ -14,7 +14,7 @@
 (deftest test-initial-edges
   (migration/remove-all-data)
   (core/initial-edges "test.txt")
-  (is (= (count (edges/all)) 8)))
+  (is (= (count (edges/show-all)) 8)))
 
 (deftest test-validate-n-insert
   (migration/remove-all-data)
@@ -28,7 +28,7 @@
   (core/validate-n-insert {:noa 4, :nob 5})
   (core/validate-n-insert {:noa 5, :nob 6})
 
-  (is (= (count (edges/all)) 8))
+  (is (= (count (edges/show-all)) 8))
 
   ;insercoes erradas ou repetidas
   (core/validate-n-insert {:noa 5, :nob 6})
@@ -38,7 +38,7 @@
   (core/validate-n-insert {:noa 1, :nob 1})
   (core/validate-n-insert {:noa 2, :nob 2})
 
-  (is (= (count (edges/all)) 8))
+  (is (= (count (edges/show-all)) 8))
 
   (is (edges/exist? 1 2))
   (is (edges/exist? 2 1))
@@ -68,32 +68,32 @@
 ;;Testa a função que calcula o farness de um nó
 (deftest test-farness-node
   (test-initial-edges)
-  (is (= (core/farness-node 1 (edges/all-edges)) 9))
-  (is (= (core/farness-node 2 (edges/all-edges)) 8))
-  (is (= (core/farness-node 3 (edges/all-edges)) 7))
-  (is (= (core/farness-node 4 (edges/all-edges)) 6))
-  (is (= (core/farness-node 5 (edges/all-edges)) 9))
-  (is (= (core/farness-node 6 (edges/all-edges)) 7)))
+  (is (= (core/farness-node 1 (edges/show-all-edges)) 9))
+  (is (= (core/farness-node 2 (edges/show-all-edges)) 8))
+  (is (= (core/farness-node 3 (edges/show-all-edges)) 7))
+  (is (= (core/farness-node 4 (edges/show-all-edges)) 6))
+  (is (= (core/farness-node 5 (edges/show-all-edges)) 9))
+  (is (= (core/farness-node 6 (edges/show-all-edges)) 7)))
 
 ;;Testa a função que devolve um vetor com as ditâncias dos outros nos do grafo ao nó referência
 (deftest test-distance-nodes
   (test-initial-edges)
-  (is (= (set (core/distance-nodes 1 (edges/all-edges)))
+  (is (= (set (core/distance-nodes 1 (edges/show-all-edges)))
          (set [{:dist 1, :no 2} {:dist 1, :no 3} {:dist 2, :no 4} {:dist 3, :no 5} {:dist 2, :no 6}])))
 
-  (is (= (set (core/distance-nodes 2 (edges/all-edges)))
+  (is (= (set (core/distance-nodes 2 (edges/show-all-edges)))
          (set [{:dist 1, :no 1} {:dist 2, :no 3} {:dist 1, :no 4} {:dist 2, :no 5} {:dist 2, :no 6}])))
 
-  (is (= (set (core/distance-nodes 3 (edges/all-edges)))
+  (is (= (set (core/distance-nodes 3 (edges/show-all-edges)))
          (set [{:dist 1, :no 1} {:dist 2, :no 2} {:dist 1, :no 4} {:dist 2, :no 5} {:dist 1, :no 6}])))
 
-  (is (= (set (core/distance-nodes 4 (edges/all-edges)))
+  (is (= (set (core/distance-nodes 4 (edges/show-all-edges)))
          (set [{:dist 2, :no 1} {:dist 1, :no 2} {:dist 1, :no 3} {:dist 1, :no 5} {:dist 1, :no 6}])))
 
-  (is (= (set (core/distance-nodes 5 (edges/all-edges)))
+  (is (= (set (core/distance-nodes 5 (edges/show-all-edges)))
          (set [{:dist 3, :no 1} {:dist 2, :no 2} {:dist 2, :no 3} {:dist 1, :no 4} {:dist 1, :no 6}])))
 
-  (is (= (set (core/distance-nodes 6 (edges/all-edges)))
+  (is (= (set (core/distance-nodes 6 (edges/show-all-edges)))
          (set [{:dist 2, :no 1} {:dist 2, :no 2} {:dist 1, :no 3} {:dist 1, :no 4} {:dist 1, :no 5}]))))
   
 (deftest test-farness
@@ -107,7 +107,7 @@
   (is (not (graph/node-exist? 5)))
   (is (not (graph/node-exist? 6)))
 
-  (core/farness (edges/all-edges))
+  (core/farness (edges/show-all-edges))
 
   (is (graph/node-exist? 1))
   (is (graph/node-exist? 2))
@@ -158,7 +158,7 @@
   (is (= (graph/node-closeness 5) 0.11111111))
   (is (= (graph/node-closeness 6) 0.14285714))
 
-  (core/fraud (edges/all-edges))
+  (core/fraud (edges/show-all-edges))
 
   (is (= (graph/node-closeness 1) 0.0))
   (is (= (graph/node-closeness 2) 0.0625))
@@ -180,7 +180,7 @@
   (is (= (graph/node-closeness 5) 0.11111111))
   (is (= (graph/node-closeness 6) 0.14285714))
 
-  (core/fraud-node 1 (edges/all-edges))
+  (core/fraud-node 1 (edges/show-all-edges))
 
   (is (= (graph/node-closeness 1) 0.0))
   (is (= (graph/node-closeness 2) 0.0625))

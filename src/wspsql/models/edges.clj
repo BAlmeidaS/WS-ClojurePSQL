@@ -1,14 +1,13 @@
 (ns wspsql.models.edges
   (:require [clojure.java.jdbc :as sql]
-        [wspsql.models.migration :as migration]))
-()
+            [wspsql.models.migration :as migration]))
 
-(defn all 
+(defn show-all 
   "Retorna um vetor com as edges ordenadas por data de criacao decrescente." 
   []
   (into [] (sql/query migration/spec ["select * from edges order by created desc"])))
 
-(defn all-edges 
+(defn show-all-edges 
   "Retorna um vetor com as edges cadastradas." 
   []
   (into [] (sql/query migration/spec ["select noa, nob from edges"])))
