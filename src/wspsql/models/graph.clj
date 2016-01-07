@@ -39,7 +39,7 @@
   [no dist] 
   (when-let [query (-> (sql/query migration/spec [(str "select * from centrality where no =" no)]) 
   			               seq)]
-    (alter-var-root #'closeness (constantly (-> query first :closeness float)))
+    (alter-var-root #'closeness (constantly (-> query first :closeness double)))
     (alter-var-root #'closeness (constantly (* closeness (- 1 (exp 0.5 dist))))) ;(1 - (1/2)^k)
     (if-not (= closeness 0.0) 
       (alter-var-root #'farness (constantly (int (/ 1 closeness))))

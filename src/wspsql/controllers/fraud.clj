@@ -15,109 +15,86 @@
 
 ;JSON de resposta de OPTIONS
 (def options-descript 
-  { 
-    :GET {
-      :description "Mostra todas os nós que possuem fraude.",
-      :comments "Não descrimina se a fraude foi ou não aplicada" 
-    },
-    :POST {
-      :description "Aplica fraude sobre um Nó",
-      :parameters {
-        :no {
-          :type "integer",
-          :description "Nó Fraudulento"
-          :required true
-        }
-      },
-      :comments "O Score do Nó fraudulento é reduzido a zero. Todos os outros nós do grafo tem seu score multiplicado pela função (1 - (1/2)^k), onde k é a distancia entre o nó fraudulento e o nó não fraudulento."
-    },
-    :PUT {
-      :description "Aplica fraude sobre um nó",
-      :parameters {
-        :no {
-          :type "integer",
-          :description "No Fraudulento"
-          :required true
-        }
-      },
-      :comments "O Score do Nó fraudulento é reduzido a zero. Todos os outros nós do grafo tem seu score multiplicado pela função (1 - (1/2)^k), onde k é a distancia entre o nó fraudulento e o nó não fraudulento."
-    },
-    :DELETE {
-      :description "Apaga a fraude de um nó.",
-      :parameters {
-        :no {
-          :type "integer",
-          :description "No Fraudulento"
-          :required true
-        }
-      }
-      :comments "Deleta, se existir, a fraude de um nó."
-    }
-  }
-)
+  {:GET {
+    :description "Mostra todas os nós que possuem fraude.",
+    :comments "Não descrimina se a fraude foi ou não aplicada" },
+   :POST {
+    :description "Aplica fraude sobre um Nó",
+    :parameters {
+     :no {
+      :type "integer",
+      :description "Nó Fraudulento"
+      :required true}},
+    :comments "O Score do Nó fraudulento é reduzido a zero. Todos os outros nós do grafo tem seu score multiplicado pela função (1 - (1/2)^k), onde k é a distancia entre o nó fraudulento e o nó não fraudulento."},
+   :PUT {
+    :description "Aplica fraude sobre um nó",
+    :parameters {
+     :no {
+      :type "integer",
+      :description "No Fraudulento"
+      :required true}},
+    :comments "O Score do Nó fraudulento é reduzido a zero. Todos os outros nós do grafo tem seu score multiplicado pela função (1 - (1/2)^k), onde k é a distancia entre o nó fraudulento e o nó não fraudulento."},
+   :DELETE {
+    :description "Apaga a fraude de um nó.",
+    :parameters {
+     :no {
+      :type "integer",
+      :description "No Fraudulento"
+      :required true}},
+    :comments "Deleta, se existir, a fraude de um nó."}})
 
-(defn index []   
+(defn index 
+  []   
   (core/farness (edges/all-edges))
   (layout_fraud/index (fraud/all)) 
 )
 
-(defn fraud-node-post "Aplica Fraude no No por POST."
+(defn fraud-node-post 
+  "Aplica Fraude no No por POST."
   [no]
   (core/farness (edges/all-edges))
-  (when     (and  (not (str/blank? no))
-                  (assist/isnumber? no)
-                  (graph/node-exist? no)
-                  (not (fraud/fraudulent? no)))
-
+  (when (and (not (str/blank? no))
+             (assist/isnumber? no)
+             (graph/node-exist? no)
+             (not (fraud/fraudulent? no)))
     (fraud/set-fraudulent (assist/cast-int no))
-    (core/fraud (edges/all-edges))
-  )
-  (ring/redirect "/fraud/")
-)
+    (core/fraud (edges/all-edges)))
+  (ring/redirect "/fraud/"))
 
-(defn remove-fraud "Remove Fraude do No por DELETE."
+(defn remove-fraud 
+  "Remove Fraude do No por DELETE."
   [no]
-  (when-not (and  (not (str/blank? no))
-                  (assist/isnumber? no)
-                  (graph/node-exist? no)
-                  (fraud/fraudulent? no))
-  
-    (ring/not-found "erro")
-  )
-  (when     (and  (not (str/blank? no))
-                  (assist/isnumber? no)
-                  (graph/node-exist? no)
-                  (fraud/fraudulent? no))
-  
+  (when-not (and (not (str/blank? no))
+                 (assist/isnumber? no)
+                 (graph/node-exist? no)
+                 (fraud/fraudulent? no))  
+    (ring/not-found "erro"))
+  (when (and (not (str/blank? no))
+             (assist/isnumber? no)
+             (graph/node-exist? no)
+             (fraud/fraudulent? no))  
     (fraud/delete-fraudulent (assist/cast-int no)) 
     (core/farness (edges/all-edges)) 
-    (ring/response "done")
-  )
-)
+    (ring/response "done")))
 
-(defn fraud-node-put "Aplica Fraude no No por PUT."
+(defn fraud-node-put 
+  "Aplica Fraude no No por PUT."
   [no]
   (core/farness (edges/all-edges))
-  (when-not (and  (not (str/blank? no))
-                  (assist/isnumber? no)
-                  (graph/node-exist? no))
-  
-    (ring/not-found "erro")
-  )
+  (when-not (and (not (str/blank? no))
+                 (assist/isnumber? no)
+                 (graph/node-exist? no))  
+    (ring/not-found "erro"))
 
-  (when     (and  (not (str/blank? no))
-                  (assist/isnumber? no)
-                  (graph/node-exist? no))
-  
+  (when (and (not (str/blank? no))
+             (assist/isnumber? no)
+             (graph/node-exist? no))
     (if (fraud/fraudulent? no)
-      (fraud/delete-fraudulent (assist/cast-int no)) 
-    )
+      (fraud/delete-fraudulent (assist/cast-int no)))
     (core/farness (edges/all-edges))
     (fraud/set-fraudulent (assist/cast-int no))
     (core/fraud (edges/all-edges))
-    (ring/response "done")
-  )
-)
+    (ring/response "done")))
 
 (defroutes routes
   (GET "/" [] 
@@ -129,10 +106,10 @@
   (PUT "/:no" [no] 
     (fraud-node-put no))
   (OPTIONS "/" []
-        (layout/options [:options :get :head] options-descript))
+    (layout/options [:options :get :head] options-descript))
   (HEAD "/" [] 
     (layout/standard nil nil))
   (ANY "/" []
-       (layout/method-not-allowed [:options :get :head :put :post :delete]))
-  (route/not-found (layout/four-oh-four))
-)
+    (layout/method-not-allowed [:options :get :head :put :post :delete]))
+  (route/not-found 
+    (layout/four-oh-four)))

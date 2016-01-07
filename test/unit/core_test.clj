@@ -9,12 +9,6 @@
             [wspsql.controllers.core :as core]
             [wspsql.models.migration :as migration]
             [clojure.data.json :as json]))
-; initial-edges
-; diffVectors
-
-; cascade-fraud 
-; fraud-node [no base]
-; fraud [base]
 
 (deftest test-initial-edges
   (migration/remove-all-data)
@@ -23,7 +17,7 @@
 
 (deftest test-validate-n-insert
   (migration/remove-all-data)
-  ;criacao da arvore: 1-2, 1-3, 2-4, 3-4, 3-6, 4-6, 4-5, 5-6
+  ;criacao da grafo: 1-2, 1-3, 2-4, 3-4, 3-6, 4-6, 4-5, 5-6
   (core/validate-n-insert {:noa 1, :nob 2})
   (core/validate-n-insert {:noa 1, :nob 3})
   (core/validate-n-insert {:noa 2, :nob 4})
@@ -119,10 +113,10 @@
 
   (is (= (graph/node-closeness 1) 0.11111111))
   (is (= (graph/node-closeness 2) 0.125))
-  (is (= (graph/node-closeness 3) 0.14285715))
+  (is (= (graph/node-closeness 3) 0.14285714))
   (is (= (graph/node-closeness 4) 0.16666667))
   (is (= (graph/node-closeness 5) 0.11111111))
-  (is (= (graph/node-closeness 6) 0.14285715)))
+  (is (= (graph/node-closeness 6) 0.14285714)))
 
 (deftest test-cascade-fraud
   (test-distance-node)
@@ -132,16 +126,16 @@
 
   (is (= (graph/node-closeness 1) 0.11111111))
   (is (= (graph/node-closeness 2) 0.125))
-  (is (= (graph/node-closeness 3) 0.14285715))
+  (is (= (graph/node-closeness 3) 0.14285714))
   (is (= (graph/node-closeness 4) 0.16666667))
   (is (= (graph/node-closeness 5) 0.11111111))
-  (is (= (graph/node-closeness 6) 0.14285715))
+  (is (= (graph/node-closeness 6) 0.14285714))
 
   (core/cascade-fraud 1 [{:dist 1, :no 2} {:dist 1, :no 3} {:dist 2, :no 4} {:dist 3, :no 5} {:dist 2, :no 6}])
 
   (is (= (graph/node-closeness 1) 0.0))
   (is (= (graph/node-closeness 2) 0.0625))
-  (is (= (graph/node-closeness 3) 0.07142858))
+  (is (= (graph/node-closeness 3) 0.07142857))
   (is (= (graph/node-closeness 4) 0.125))
   (is (= (graph/node-closeness 5) 0.09722222))
   (is (= (graph/node-closeness 6) 0.10714286)))
@@ -154,16 +148,16 @@
 
   (is (= (graph/node-closeness 1) 0.11111111))
   (is (= (graph/node-closeness 2) 0.125))
-  (is (= (graph/node-closeness 3) 0.14285715))
+  (is (= (graph/node-closeness 3) 0.14285714))
   (is (= (graph/node-closeness 4) 0.16666667))
   (is (= (graph/node-closeness 5) 0.11111111))
-  (is (= (graph/node-closeness 6) 0.14285715))
+  (is (= (graph/node-closeness 6) 0.14285714))
 
   (core/fraud (edges/all-edges))
 
   (is (= (graph/node-closeness 1) 0.0))
   (is (= (graph/node-closeness 2) 0.0625))
-  (is (= (graph/node-closeness 3) 0.07142858))
+  (is (= (graph/node-closeness 3) 0.07142857))
   (is (= (graph/node-closeness 4) 0.125))
   (is (= (graph/node-closeness 5) 0.09722222))
   (is (= (graph/node-closeness 6) 0.10714286)))
@@ -176,16 +170,16 @@
 
   (is (= (graph/node-closeness 1) 0.11111111))
   (is (= (graph/node-closeness 2) 0.125))
-  (is (= (graph/node-closeness 3) 0.14285715))
+  (is (= (graph/node-closeness 3) 0.14285714))
   (is (= (graph/node-closeness 4) 0.16666667))
   (is (= (graph/node-closeness 5) 0.11111111))
-  (is (= (graph/node-closeness 6) 0.14285715))
+  (is (= (graph/node-closeness 6) 0.14285714))
 
   (core/fraud-node 1 (edges/all-edges))
 
   (is (= (graph/node-closeness 1) 0.0))
   (is (= (graph/node-closeness 2) 0.0625))
-  (is (= (graph/node-closeness 3) 0.07142858))
+  (is (= (graph/node-closeness 3) 0.07142857))
   (is (= (graph/node-closeness 4) 0.125))
   (is (= (graph/node-closeness 5) 0.09722222))
   (is (= (graph/node-closeness 6) 0.10714286)))

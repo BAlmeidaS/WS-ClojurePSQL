@@ -9,130 +9,108 @@
             [wspsql.controllers.assist :as assist]
             [wspsql.controllers.core :as core]
             [wspsql.models.graph :as graph]
-            [wspsql.models.fraud :as fraud]            
+            [wspsql.models.fraud :as fraud]          
   )
 )
 
 ;JSON de resposta de OPTIONS
 (def options-descript 
-  { 
-    :GET {
-      :description "Mostra todas as ligacoes existentes",
-      :comments "Exibe um Form que se for preenchido corretamente, gera uma ligacao por POST"
-    },
-    :POST {
-      :description "Cria uma ligacao entre dois nos no grafo",
-      :parameters {
-        :no_a {
-          :type "integer",
-          :description "Primeiro no da ligacao."
-          :required true
-        },
-        :no_b {
-          :type "integer",
-          :description "Segundo no da ligacao."
-          :required true
-        }
-      },
-      :comments "Gera a ligacao apenas se ela ainda nao existir. Se ela ja existir devolve uma aviso"
-    },
-    :PUT {
-      :description "Cria uma ligacao entre dois nos no grafo",
-      :parameters {
-        :no_a {
-          :type "integer",
-          :description "Primeiro no da ligacao."
-          :required true
-        },
-        :no_b {
-          :type "integer",
-          :description "Segundo no da ligacao."
-          :required true
-        }
-      },
-      :comments "Se a ligacao ja existir, apaga ela, e cria uma nova. Isso atualiza sua data de criacao"
-    },
-    :DELETE {
-      :description "Deleta uma ligacao entre dois nos no grafo",
-      :parameters {
-        :no_a {
-          :type "integer",
-          :description "Primeiro no da ligacao."
-          :required true
-        },
-        :no_b {
-          :type "integer",
-          :description "Segundo no da ligacao."
-          :required true
-        }
-      },
-      :comments "Deleta a ligacao apenas se ela existir."
-    }
-  }
-)
+  {:GET {
+    :description "Mostra todas as ligacoes existentes",
+    :comments "Exibe um Form que se for preenchido corretamente, gera uma ligacao por POST"},
+   :POST {
+    :description "Cria uma ligacao entre dois nos no grafo",
+    :parameters {
+     :no_a {
+      :type "integer",
+      :description "Primeiro no da ligacao."
+      :required true},
+     :no_b {
+      :type "integer",
+      :description "Segundo no da ligacao."
+      :required true}},
+    :comments "Gera a ligacao apenas se ela ainda nao existir. Se ela ja existir devolve uma aviso"},
+   :PUT {
+    :description "Cria uma ligacao entre dois nos no grafo",
+    :parameters {
+     :no_a {
+      :type "integer",
+      :description "Primeiro no da ligacao."
+      :required true},
+     :no_b {
+      :type "integer",
+      :description "Segundo no da ligacao."
+      :required true}},
+    :comments "Se a ligacao ja existir, apaga ela, e cria uma nova. Isso atualiza sua data de criacao"},
+   :DELETE {
+    :description "Deleta uma ligacao entre dois nos no grafo",
+    :parameters {
+     :no_a {
+      :type "integer",
+      :description "Primeiro no da ligacao."
+      :required true},
+     :no_b {
+      :type "integer",
+      :description "Segundo no da ligacao."
+      :required true}},
+    :comments "Deleta a ligacao apenas se ela existir."}})
 
 (defn index []  (layout_edges/index (edges/all)))
 
-(defn create-post "Criacao de Edge por POST"
+(defn create-post 
+  "Criacao de Edge por POST"
   [A B]
-  (when   (and (not (or (str/blank? A) (str/blank? B)))
-                (and (assist/isnumber? A) (assist/isnumber? B))
-                (not (= A B)))      
+  (when (and (not (or (str/blank? A) (str/blank? B)))
+             (and (assist/isnumber? A) (assist/isnumber? B))
+             (not (= A B)))      
     (if (edges/exist? A B)
       (println (str "Ligacao " A "-" B " ja cadastrado"))
-      (edges/create (assist/cast-int A) (assist/cast-int B))
-    )           
-  ) 
-  (ring/redirect "/edges/") 
-)
+      (edges/create (assist/cast-int A) (assist/cast-int B)))) 
+  (ring/redirect "/edges/"))
 
-(defn delete "Delecao de Edge por DELETE"
+(defn delete 
+  "Delecao de Edge por DELETE"
   [A B]
-  (when-not(and (not (or (str/blank? A) (str/blank? B)))
-                (and (assist/isnumber? A) (assist/isnumber? B))
-                (not (= A B))
-                (edges/exist? A B))
+  (when-not (and (not (or (str/blank? A) (str/blank? B)))
+                 (and (assist/isnumber? A) (assist/isnumber? B))
+                 (not (= A B))
+                 (edges/exist? A B))
+    (ring/not-found "erro =/")) 
 
-    (ring/not-found "erro =/")
-  ) 
   (when  (and (not (or (str/blank? A) (str/blank? B)))
               (and (assist/isnumber? A) (assist/isnumber? B))
               (not (= A B))
               (edges/exist? A B))
-
     (edges/delete (assist/cast-int A) (assist/cast-int B))
     (core/farness (edges/all-edges))
     ;Se o no deixar de existir e ele possuir uma fraude, essa fraude deve ser deletada
     (if (not (graph/node-exist? (assist/cast-int A))) 
-      (if (fraud/fraudulent? (assist/cast-int A)) (fraud/delete-fraudulent (assist/cast-int A)))
-    )
+      (if (fraud/fraudulent? 
+        (assist/cast-int A)) 
+        (fraud/delete-fraudulent (assist/cast-int A))))
     (if (not (graph/node-exist? (assist/cast-int B))) 
-      (if (fraud/fraudulent? (assist/cast-int B)) (fraud/delete-fraudulent (assist/cast-int B)))
-    )
-    (ring/response "done")
-  )
-)
+      (if (fraud/fraudulent? 
+        (assist/cast-int B)) 
+        (fraud/delete-fraudulent (assist/cast-int B))))
+    (ring/response "done")))
 
-(defn create-put "Criacao de Edge por PUT"
+(defn create-put 
+  "Criacao de Edge por PUT"
   [A B]
-  (when-not(and (not (or (str/blank? A) (str/blank? B)))
-                (and (assist/isnumber? A) (assist/isnumber? B))
-                (not (= A B)))
+  (when-not (and (not (or (str/blank? A) (str/blank? B)))
+                 (and (assist/isnumber? A) (assist/isnumber? B))
+                 (not (= A B)))
 
-    (ring/not-found "erro =/")
-  )
-  (when   (and (not (or (str/blank? A) (str/blank? B)))
-                (and (assist/isnumber? A) (assist/isnumber? B))
-                (not (= A B)))
+    (ring/not-found "erro =/"))
+  
+  (when (and (not (or (str/blank? A) (str/blank? B)))
+             (and (assist/isnumber? A) (assist/isnumber? B))
+             (not (= A B)))
 
     (if (edges/exist? A B)
-      (edges/delete (assist/cast-int A) (assist/cast-int B)) ;PUT ira incluir de qualquer jeito, por isso, deleta (se existir) antes de incluir
-    )
+      (edges/delete (assist/cast-int A) (assist/cast-int B))) ;PUT ira incluir de qualquer jeito, por isso, deleta (se existir) antes de incluir
     (edges/create (assist/cast-int A) (assist/cast-int B))
-    (ring/response "done")
-  )    
-)
-
+    (ring/response "done")))
 
 (defroutes routes
   (GET "/" [] 
@@ -144,10 +122,10 @@
   (PUT "/:A/:B" [A B] 
     (create-put A B))
   (OPTIONS "/" []
-        (layout/options [:options :get :head :put :post :delete] options-descript))
+    (layout/options [:options :get :head :put :post :delete] options-descript))
   (HEAD "/" [] 
     (layout/standard nil nil))
   (ANY "/" []
-        (layout/method-not-allowed [:options :get :head :put :post :delete]))
-  (route/not-found (layout/four-oh-four))
-)
+    (layout/method-not-allowed [:options :get :head :put :post :delete]))
+  (route/not-found 
+    (layout/four-oh-four)))

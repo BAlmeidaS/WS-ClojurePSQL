@@ -98,7 +98,7 @@
      (farness-node tempX tempBase (into [] (drop 1 tempVetor)) tempRestrict))))
 
 (defn distance-node
-  "retorna um vetor com os as distances de todos os nos da arvore para o no analisado"
+  "retorna um vetor com os as distances de todos os nos do grafo para o no analisado"
   ([x base] (distance-node [x 0] base [] #{}))
 
   ([restrict] (into [] restrict))
@@ -170,7 +170,14 @@
      (when (seq data)
        (alter-var-root #'no (constantly (into {}
         (map 
-         #(hash-map :no %1 :closeness (float (/ 1 %2)) :farness %2)
+         #(hash-map :no %1 
+                    :closeness (->> %2
+                                    (/ 1)
+                                    (* 1e9)
+                                    (Math/round)
+                                    (* 1e-9) 
+                                    double)
+                    :farness %2)
           (vector (first data))
           (vector (farness-node (first data) base))))))
        (graph/insert-node no)

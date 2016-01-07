@@ -10,7 +10,6 @@
             [clojure.data.json :as json]))
 
 
-(comment
 ;;testes de migracao do BD
 (deftest test-migration
   (migration/drop-tables)
@@ -158,9 +157,9 @@
   (is (empty? (fraud/all)))
   (is (empty? (fraud/not-applied))))
 
-;;Criar duas arvores e testar o utilizacao correta do fator que reduz o score de todos os nos quando um no é dito como fraudulento
-(deftest test-fraud-complex-tree
-  ;; PRIMEIRA ARVORE : 1-2, 1-3, 2-4, 3-5 
+;;Criar duas grafos e testar o utilizacao correta do fator que reduz o score de todos os nos quando um no é dito como fraudulento
+(deftest test-fraud-complex-graph
+  ;; PRIMEIRA grafo : 1-2, 1-3, 2-4, 3-5 
   (graph/insert-node {:no 1, :closeness 0.2, :farness 5})
   (graph/insert-node {:no 2, :closeness 0.33333334, :farness 3})
   (graph/insert-node {:no 3, :closeness 0.2, :farness 5})
@@ -188,7 +187,7 @@
   (graph/remove-all) 
   (is (empty? (graph/all)))
 
-  ; SEGUNDA ARVORE : 1-2, 2-3, 3-4, 4-1 
+  ; SEGUNDA grafo : 1-2, 2-3, 3-4, 4-1 
   (graph/insert-node {:no 1, :closeness 0.25, :farness 4})
   (graph/insert-node {:no 2, :closeness 0.25, :farness 4})
   (graph/insert-node {:no 3, :closeness 0.25, :farness 4})
@@ -246,7 +245,3 @@
   (graph/remove-all) 
   (is (empty? (graph/all))))
   
-
-
-
-)
