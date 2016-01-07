@@ -28,7 +28,7 @@
     (HEAD "/" [] 
       (layout/standard nil nil))
     (GET "/txt" [] ;endpoint utilizado apenas para carregar os valores no banco - apaga o banco antes de carregar os valores do txt
-      (core/initial-edges)) 
+      (core/initial-edges "edges.txt")) 
     (ANY "/" []
         (layout/method-not-allowed [:options :get]))
     (route/not-found (layout/four-oh-four))

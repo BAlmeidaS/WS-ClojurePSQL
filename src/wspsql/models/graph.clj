@@ -42,7 +42,8 @@
     (alter-var-root #'closeness (constantly (-> query first :closeness float)))
     (alter-var-root #'closeness (constantly (* closeness (- 1 (exp 0.5 dist))))) ;(1 - (1/2)^k)
     (if-not (= closeness 0.0) 
-      (alter-var-root #'farness (constantly (int (/ 1 closeness)))))
+      (alter-var-root #'farness (constantly (int (/ 1 closeness))))
+      (alter-var-root #'farness (constantly 0)))
     (sql/update! migration/spec :centrality {:no no, :closeness (with-precision 10 (bigdec closeness)), :farness farness} ["no = ?" no])))
 
 (defn node-exist? 

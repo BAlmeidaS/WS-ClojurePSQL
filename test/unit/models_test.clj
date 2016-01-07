@@ -9,13 +9,15 @@
             [wspsql.models.migration :as migration]
             [clojure.data.json :as json]))
 
+
+(comment
 ;;testes de migracao do BD
 (deftest test-migration
   (migration/drop-tables)
   (is (false? (migration/migrated?)))
   (migration/migrate)
   (is (true? (migration/migrated?))))
-
+  
 ;;testes de inclusao e mudanca de edges
 (deftest test-edges
   ;Apaga todos os dados anteriores
@@ -247,3 +249,4 @@
 
 
 
+)
